@@ -6,20 +6,19 @@ import com.enigma.ezycamp.dto.request.RegisterGuideRequest;
 import com.enigma.ezycamp.dto.request.RegisterRequest;
 import com.enigma.ezycamp.dto.response.LoginResponse;
 import com.enigma.ezycamp.dto.response.RegisterResponse;
-import com.enigma.ezycamp.entity.Customer;
-import com.enigma.ezycamp.entity.Guide;
-import com.enigma.ezycamp.entity.Role;
-import com.enigma.ezycamp.entity.UserAccount;
+import com.enigma.ezycamp.entity.*;
 import com.enigma.ezycamp.repository.UserAccountRepository;
-import com.enigma.ezycamp.service.AuthService;
-import com.enigma.ezycamp.service.CustomerService;
-import com.enigma.ezycamp.service.RoleService;
+import com.enigma.ezycamp.service.*;
 import com.enigma.ezycamp.util.ValidationUtil;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,6 +34,11 @@ public class AuthServiceImpl implements AuthService {
     private final RoleService roleService;
     private final PasswordEncoder passwordEncoder;
     private final CustomerService customerService;
+    private final ImageIdCardService imageIdCardService;
+    private final ImageService imageService;
+    private final GuideService guideService;
+    private final AuthenticationManager authenticationManager;
+    private final JwtService jwtService;
     @Value("ezycamp.username.superadmin")
     private final String USERNAME_SUPER_ADMIN;
     @Value("ezycamp.password.superadmin")
@@ -82,20 +86,32 @@ public class AuthServiceImpl implements AuthService {
                 .username(request.getUsername()).password(password)
                 .roles(List.of(role)).isEnable(true).build();
         userAccountRepository.saveAndFlush(account);
+        ImageIdCard imageCard = imageIdCardService.addImage(request.getIdCardImage());
+        Image imageSelfie = imageService.addImage(request.getSelfieImage());
         Guide guide = Guide.builder().name(request.getName())
-                .phone(request.getPhone()).userAccount(account).build();
-        guideService.addCustomer(guide);
+                .phone(request.getPhone()).imageId(imageSelfie)
+                .imageIdCard(imageCard).location(request.getLocation()).userAccount(account).build();
+        guideService.addGuide(guide);
         List<String> roleAuth = account.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
         return RegisterResponse.builder().username(account.getUsername()).roles(roleAuth).build();
     }
 
     @Override
     public LoginResponse login(LoginRequest request) {
-        return null;
+        Authentication auth =new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword());
+        Authentication authenticate =authenticationManager.authenticate(auth);
+        SecurityContextHolder.getContext().setAuthentication(authenticate);
+        UserAccount account = (UserAccount) authenticate.getPrincipal();
+        String token = jwtService.generateToken(account);
+        return LoginResponse.builder().username(account.getUsername())
+                .token(token).roles(account.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList())
+                .build();
     }
 
     @Override
     public boolean validateToken() {
-        return false;
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserAccount userAccount = this.userAccountRepository.findByUsername(authentication.getPrincipal().toString()).orElse(null);
+        return userAccount != null;
     }
 }
