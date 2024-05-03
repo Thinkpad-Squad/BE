@@ -21,19 +21,19 @@ public class UserServiceImpl implements UserService {
     @Transactional(readOnly = true)
     @Override
     public UserAccount getByUserId(String id) {
-        return userAccountRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+        return userAccountRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User tidak ditemukan"));
     }
 
     @Transactional(readOnly = true)
     @Override
     public UserAccount getByContext() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        return userAccountRepository.findByUsername(auth.getPrincipal().toString()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+        return userAccountRepository.findByUsername(auth.getPrincipal().toString()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User tidak ditemukan"));
     }
 
     @Transactional(readOnly = true)
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return userAccountRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        return userAccountRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User tidak ditemukan"));
     }
 }

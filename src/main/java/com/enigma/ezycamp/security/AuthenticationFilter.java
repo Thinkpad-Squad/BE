@@ -41,7 +41,7 @@ public class AuthenticationFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
         } catch (Exception e) {
-            log.error("Cannot set user authentication: {}", e.getMessage());
+            log.error("Gagal memproses autentikasi user: {}", e.getMessage());
         }
         filterChain.doFilter(request, response);
     }

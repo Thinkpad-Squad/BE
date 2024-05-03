@@ -14,6 +14,6 @@ public class AccessDeniedForbiddenHandler implements AccessDeniedHandler {
 
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException, ServletException {
-        response.sendError(HttpServletResponse.SC_FORBIDDEN,"Forbidden, Access Denied");
+        response.sendError(HttpServletResponse.SC_FORBIDDEN,"Forbidden, akses ditolak");
     }
 }

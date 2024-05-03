@@ -9,6 +9,7 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.enigma.ezycamp.dto.response.JwtClaims;
 import com.enigma.ezycamp.entity.UserAccount;
 import com.enigma.ezycamp.service.JwtService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.GrantedAuthority;
@@ -18,16 +19,14 @@ import org.springframework.web.server.ResponseStatusException;
 import java.time.Instant;
 
 @Service
+@RequiredArgsConstructor
 public class JwtServiceImpl implements JwtService {
+    @Value("ezycamp.jwt.secret_key")
     private final String JWT_SECRET;
+    @Value("ezycamp.jwt.issuer")
     private final String ISSUER;
+    @Value("ezycamp.jwt.expirationInSecond")
     private final Long JWT_EXPIRATION;
-
-    public JwtServiceImpl(@Value("ezycamp.jwt.secret_key") String JWT_SECRET, @Value("ezycamp.jwt.issuer") String ISSUER, @Value("ezycamp.jwt.expirationInSecond") Long JWT_EXPIRATION) {
-        this.JWT_SECRET = JWT_SECRET;
-        this.ISSUER = ISSUER;
-        this.JWT_EXPIRATION = JWT_EXPIRATION;
-    }
 
     @Override
     public String generateToken(UserAccount account) {
@@ -38,7 +37,7 @@ public class JwtServiceImpl implements JwtService {
                     .withIssuedAt(Instant.now()).withExpiresAt(Instant.now().plusSeconds(JWT_EXPIRATION))
                     .withIssuer(ISSUER).sign(algorithm);
         } catch (JWTCreationException e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error creating JWT token");
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error dalam generate JWT token");
         }
     }
 
