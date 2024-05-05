@@ -22,7 +22,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,15 +36,14 @@ public class AuthServiceImpl implements AuthService {
     private final RoleService roleService;
     private final PasswordEncoder passwordEncoder;
     private final CustomerService customerService;
-    private final ImageIdCardService imageIdCardService;
-    private final ImageService imageService;
-    private final GuideService guideService;
+    private final GuideImageService guideImageService;
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
-    @Value("ezycamp.username.superadmin")
-    private final String USERNAME_SUPER_ADMIN;
-    @Value("ezycamp.password.superadmin")
-    private final String PASSWORD_SUPER_ADMIN;
+    private final LocationService locationService;
+    @Value("${ezycamp.username.superadmin}")
+    private String USERNAME_SUPER_ADMIN;
+    @Value("${ezycamp.password.superadmin}")
+    private String PASSWORD_SUPER_ADMIN;
 
     @Transactional(rollbackFor = Exception.class)
     @PostConstruct
@@ -86,12 +87,15 @@ public class AuthServiceImpl implements AuthService {
                 .username(request.getUsername()).password(password)
                 .roles(List.of(role)).isEnable(true).build();
         userAccountRepository.saveAndFlush(account);
-        ImageIdCard imageCard = imageIdCardService.addImage(request.getIdCardImage());
-        Image imageSelfie = imageService.addImage(request.getSelfieImage());
-        Guide guide = Guide.builder().name(request.getName())
-                .phone(request.getPhone()).imageId(imageSelfie)
-                .imageIdCard(imageCard).location(request.getLocation()).userAccount(account).build();
-        guideService.addGuide(guide);
+        Location location = locationService.getById(request.getLocation());
+        Guide guide = Guide.builder().name(request.getName()).phone(request.getPhone())
+                .price(request.getPrice()).location(location).build();
+        List<GuideImage> images = new ArrayList<>();
+        for (MultipartFile image:request.getImages()){
+            GuideImage imageAdded = guideImageService.addImage(guide, image);
+            images.add(imageAdded);
+        }
+        guide.setImages(images);
         List<String> roleAuth = account.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
         return RegisterResponse.builder().username(account.getUsername()).roles(roleAuth).build();
     }

@@ -25,7 +25,6 @@ public class AuthController {
     private final AuthService authService;
     private final ObjectMapper objectMapper;
 
-    @SecurityRequirement(name = "Bearer Authentication")
     @PostMapping(path = "/register", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<WebResponse<RegisterResponse>> registerCustomer(@RequestBody RegisterRequest request){
         WebResponse<RegisterResponse> register = WebResponse.<RegisterResponse>builder().statusCode(HttpStatus.CREATED.value())
@@ -52,7 +51,6 @@ public class AuthController {
         }
     }
 
-    @SecurityRequirement(name = "Bearer Authentication")
     @PostMapping(path = "/login", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<WebResponse<?>> login(@RequestBody LoginRequest request) {
         LoginResponse loginResponse = authService.login(request);

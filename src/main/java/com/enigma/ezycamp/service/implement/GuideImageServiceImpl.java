@@ -1,13 +1,16 @@
 package com.enigma.ezycamp.service.implement;
 
-import com.enigma.ezycamp.repository.ImageIdCardRepository;
-import com.enigma.ezycamp.service.ImageIdCardService;
+import com.enigma.ezycamp.entity.Guide;
+import com.enigma.ezycamp.entity.GuideImage;
+import com.enigma.ezycamp.repository.GuideImageRepository;
+import com.enigma.ezycamp.service.GuideImageService;
 import jakarta.annotation.PostConstruct;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -18,12 +21,12 @@ import java.nio.file.Paths;
 import java.util.List;
 
 @Service
-public class ImageIdCardServiceImpl implements ImageIdCardService {
-    private final ImageIdCardRepository imageRepository;
+public class GuideImageServiceImpl implements GuideImageService {
+    private final GuideImageRepository imageRepository;
     private final Path IMAGE_PATH;
 
     @Autowired
-    public ImageIdCardServiceImpl(ImageIdCardRepository imageRepository, @Value("ezycamp.multipart.path-location.card-image") String imagePath) {
+    public GuideImageServiceImpl(GuideImageRepository imageRepository, @Value("${ezycamp.multipart.path-location.guide-image}") String imagePath) {
         this.imageRepository = imageRepository;
         this.IMAGE_PATH = Paths.get(imagePath);
     }
@@ -39,15 +42,17 @@ public class ImageIdCardServiceImpl implements ImageIdCardService {
         }
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
-    public ImageIdCard addImage(MultipartFile imageCard) {
+    public GuideImage addImage(Guide guide, MultipartFile guideImage) {
         try {
-            if(!List.of("image/jpeg", "image/jpg", "image/png").contains(imageCard.getContentType())) throw new ConstraintViolationException("Format file gambar tidak valid", null);
-            String name = System.currentTimeMillis()+"_"+imageCard.getOriginalFilename();
+            if(!List.of("image/jpeg", "image/jpg", "image/png").contains(guideImage.getContentType())) throw new ConstraintViolationException("Format file gambar tidak valid", null);
+            String name = System.currentTimeMillis()+"_"+guideImage.getOriginalFilename();
             Path imagePath = IMAGE_PATH.resolve(name);
-            Files.copy(imageCard.getInputStream(),imagePath);
-            ImageIdCard imageSave = ImageIdCard.builder().name(name).path(imagePath.toString())
-                    .size(imageCard.getSize()).contentType(imageCard.getContentType()).build();
+            Files.copy(guideImage.getInputStream(),imagePath);
+            GuideImage imageSave = GuideImage.builder().name(name).url(imagePath.toString())
+                    .originalName(guideImage.getOriginalFilename()).size(guideImage.getSize())
+                    .guide(guide).build();
             return imageRepository.saveAndFlush(imageSave);
         } catch (IOException e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Gagal menyimpan gambar");

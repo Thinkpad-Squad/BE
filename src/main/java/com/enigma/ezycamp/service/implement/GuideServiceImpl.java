@@ -19,11 +19,6 @@ import org.springframework.web.server.ResponseStatusException;
 public class GuideServiceImpl implements GuideService {
     private final GuideRepository guideRepository;
 
-    @Transactional(rollbackFor = Exception.class)
-    @Override
-    public void addGuide(Guide guide) {
-        guideRepository.saveAndFlush(guide);
-    }
 
     @Transactional(readOnly = true)
     @Override
