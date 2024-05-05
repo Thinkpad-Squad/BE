@@ -52,7 +52,7 @@ public class AuthServiceImpl implements AuthService {
         if(admin.isPresent()) return;
         Role adminRole = roleService.getOrSave(UserRole.ROLE_ADMIN);
         userAccountRepository.saveAndFlush(UserAccount.builder()
-                .username(USERNAME_SUPER_ADMIN).password(PASSWORD_SUPER_ADMIN)
+                .username(USERNAME_SUPER_ADMIN).password(passwordEncoder.encode(PASSWORD_SUPER_ADMIN))
                 .isEnable(true).roles(List.of(adminRole)).build());
     }
 
