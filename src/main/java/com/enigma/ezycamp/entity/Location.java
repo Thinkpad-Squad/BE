@@ -12,19 +12,20 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 @Entity
-@Table(name = "m_customer")
-public class Customer {
+@Table(name = "m_location")
+public class Location {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
     @Column(name = "name")
     private String name;
-    @Column(name = "phone")
-    private String phone;
-    @OneToOne
-    @JoinColumn(name = "user_account_id")
-    private UserAccount userAccount;
-    @OneToMany(mappedBy = "customer")
+    @Column(name = "description")
+    private String description;
+    @Column(name = "recommended_activity")
+    private String recommendedActivity;
+    @Column(name = "safety_tips")
+    private String safetyTips;
+    @OneToMany(mappedBy = "location")
     @JsonManagedReference
-    private List<Cart> carts;
+    private List<LocationImage> images;
 }

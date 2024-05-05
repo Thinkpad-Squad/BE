@@ -10,17 +10,20 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 @Entity
-@Table(name = "m_image")
-public class Image {
+@Table(name = "t_order_guarantee_image")
+public class OrderGuaranteeImage {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
-    @Column(name = "name", nullable = false)
+    @Column(name = "name")
     private String name;
-    @Column(name = "path", nullable = false)
-    private String path;
-    @Column(name = "size", nullable = false, columnDefinition = "BIGINT CHECK (size>=0)")
+    @Column(name = "url")
+    private String url;
+    @Column(name = "original_name")
+    private String originalName;
+    @Column(name = "size")
     private Long size;
-    @Column(name = "content_type", nullable = false)
-    private String contentType;
+    @OneToOne
+    @JoinColumn(name = "order_id")
+    private Order order;
 }

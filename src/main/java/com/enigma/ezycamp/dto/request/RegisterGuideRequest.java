@@ -1,11 +1,14 @@
 package com.enigma.ezycamp.dto.request;
 
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @Getter
 @Setter
@@ -17,13 +20,13 @@ public class RegisterGuideRequest {
     private String name;
     @NotBlank(message = "Nomor telepon tidak boleh kosong")
     private String phone;
-    @NotNull(message = "Foto diri tidak boleh kosong")
-    @Size(min = 1, max = 2097152, message = "Foto diri tidak boleh berukuran lebih dari 2MB")
-    private MultipartFile selfieImage;
-    @NotNull(message = "Kartu identitas tidak boleh kosong")
-    @Size(min = 1, max = 2097152, message = "Kartu identitas tidak boleh berukuran lebih dari 2MB")
-    private MultipartFile idCardImage;
-    @NotBlank(message = "Lokasi pemanduan wisata tidak boleh kosong")
+    @NotNull
+    @Min(value = 0, message = "Harga jasa pemandu tidak boleh kurang dari 0")
+    private Long price;
+    @NotNull(message = "Foto tidak boleh kosong")
+    @Size(min = 1, max = 10485760, message = "Foto tidak boleh berukuran lebih dari 10MB")
+    private List<MultipartFile> images;
+    @NotBlank(message = "ID lokasi wisata tidak boleh kosong")
     private String location;
     @NotBlank(message = "Username tidak boleh kosong")
     @Length(min = 6, message = "Username tidak boleh kurang dari 6 karakter")

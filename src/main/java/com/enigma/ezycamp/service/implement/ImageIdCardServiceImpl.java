@@ -1,9 +1,6 @@
 package com.enigma.ezycamp.service.implement;
 
-import com.enigma.ezycamp.entity.Image;
-import com.enigma.ezycamp.entity.ImageIdCard;
 import com.enigma.ezycamp.repository.ImageIdCardRepository;
-import com.enigma.ezycamp.repository.ImageRepository;
 import com.enigma.ezycamp.service.ImageIdCardService;
 import jakarta.annotation.PostConstruct;
 import jakarta.validation.ConstraintViolationException;

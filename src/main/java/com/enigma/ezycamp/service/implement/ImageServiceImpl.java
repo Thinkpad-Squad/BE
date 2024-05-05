@@ -1,11 +1,9 @@
 package com.enigma.ezycamp.service.implement;
 
-import com.enigma.ezycamp.entity.Image;
 import com.enigma.ezycamp.repository.ImageRepository;
 import com.enigma.ezycamp.service.ImageService;
 import jakarta.annotation.PostConstruct;
 import jakarta.validation.ConstraintViolationException;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;

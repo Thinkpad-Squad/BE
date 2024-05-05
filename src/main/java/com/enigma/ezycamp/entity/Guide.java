@@ -1,7 +1,11 @@
 package com.enigma.ezycamp.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.List;
 
 @Builder
 @Getter
@@ -14,18 +18,21 @@ public class Guide {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
-    @Column(name = "guide_name")
+    @Column(name = "name")
     private String name;
-    @Column(name = "guide_phone")
+    @Column(name = "phone")
     private String phone;
-    @OneToOne
-    @JoinColumn(name = "image_id")
-    private Image imageId;
-    @OneToOne
-    @JoinColumn(name = "image_card_id")
-    private ImageIdCard imageIdCard;
-    @Column(name = "location")
-    private String location;
+    @OneToMany(mappedBy = "guide")
+    @JsonManagedReference
+    private List<GuideImage> images;
+    @Column(name = "price")
+    private Long price;
+    @ManyToOne
+    @JoinColumn(name = "location_id", referencedColumnName = "id")
+    private Location location;
+    @OneToMany(mappedBy = "guide")
+    @JsonManagedReference
+    private List<ReviewGuide> reviews;
     @OneToOne
     @JoinColumn(name = "user_account_id")
     private UserAccount userAccount;
