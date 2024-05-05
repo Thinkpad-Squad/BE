@@ -1,6 +1,9 @@
 package com.enigma.ezycamp.controller;
 
 import com.enigma.ezycamp.dto.request.SearchRequest;
+import com.enigma.ezycamp.dto.request.UpdateCartRequest;
+import com.enigma.ezycamp.dto.request.UpdateCustomerRequest;
+import com.enigma.ezycamp.dto.response.PagingResponse;
 import com.enigma.ezycamp.dto.response.WebResponse;
 import com.enigma.ezycamp.entity.Customer;
 import com.enigma.ezycamp.security.AuthenticatedUser;
@@ -46,6 +49,44 @@ public class CustomerController {
     ){
         SearchRequest request = SearchRequest.builder().sortBy(sortBy).size(size)
                 .page(page).direction(direction).name(name).build();
-        Page<Customer> customers =
+        Page<Customer> customers = customerService.getAllCustomer(request);
+        PagingResponse pagingResponse = PagingResponse.builder().totalPages(customers.getTotalPages())
+                .totalElement(customers.getTotalElements()).page(customers.getPageable().getPageNumber()+1)
+                .size(customers.getPageable().getPageSize()).hasNext(customers.hasNext())
+                .hasPrevious(customers.hasPrevious()).build();
+        WebResponse<List<Customer>> response = WebResponse.<List<Customer>>builder()
+                .statusCode(HttpStatus.OK.value()).message("Berhasil mendapatkan data customer")
+                .data(customers.getContent()).paging(pagingResponse).build();
+        return ResponseEntity.ok(response);
+    }
+
+    @SecurityRequirement(name = "Bearer Authentication")
+    @PreAuthorize("hasRole('ADMIN') or @authenticatedUser.hasCustomerId(#request.id)")
+    @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<WebResponse<Customer>> updateCustomer(@RequestBody UpdateCustomerRequest request){
+        Customer customer = customerService.updateCustomer(request);
+        WebResponse<Customer> response = WebResponse.<Customer>builder().statusCode(HttpStatus.OK.value())
+                .message("Berhasil memperbarui data customer").data(customer).build();
+        return ResponseEntity.ok(response);
+    }
+
+    @SecurityRequirement(name = "Bearer Authentication")
+    @PreAuthorize("hasRole('ADMIN') or @authenticatedUser.hasCustomerId(#request.id)")
+    @DeleteMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<WebResponse> disableCustomerById(@PathVariable String id){
+        customerService.disableById(id);
+        WebResponse response = WebResponse.builder().statusCode(HttpStatus.OK.value())
+                .message("Berhasil menghapus data customer").build();
+        return ResponseEntity.ok(response);
+    }
+
+    @SecurityRequirement(name = "Bearer Authentication")
+    @PreAuthorize("hasRole('ADMIN') or @authenticatedUser.hasCustomerId(#id)")
+    @PutMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<WebResponse<Customer>> changeCart(@PathVariable String id, @RequestBody UpdateCartRequest request){
+        Customer customer = customerService.updateCart(id, request);
+        WebResponse<Customer> response = WebResponse.<Customer>builder().statusCode(HttpStatus.OK.value())
+                .message("Berhasil mengubah keranjang").data(customer).build();
+        return ResponseEntity.ok(response);
     }
 }

@@ -21,8 +21,9 @@ public class Cart {
     @JoinColumn(name = "customer_id", referencedColumnName = "id")
     @JsonBackReference
     private Customer customer;
-    @ManyToMany(fetch = FetchType.EAGER)
-    private List<Equipment> equipments;
+    @ManyToOne
+    @JoinColumn(name = "equipment_id", referencedColumnName = "id")
+    private Equipment equipment;
     @Column(name = "quantity")
     private Integer quantity;
 }

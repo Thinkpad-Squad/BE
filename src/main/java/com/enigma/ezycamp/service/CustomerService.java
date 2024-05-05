@@ -1,6 +1,7 @@
 package com.enigma.ezycamp.service;
 
 import com.enigma.ezycamp.dto.request.SearchRequest;
+import com.enigma.ezycamp.dto.request.UpdateCartRequest;
 import com.enigma.ezycamp.dto.request.UpdateCustomerRequest;
 import com.enigma.ezycamp.entity.Customer;
 import org.springframework.data.domain.Page;
@@ -10,5 +11,6 @@ public interface CustomerService {
     Customer getCustomerById(String id);
     Page<Customer> getAllCustomer(SearchRequest request);
     Customer updateCustomer(UpdateCustomerRequest customer);
-    Customer disableById(String id);
+    void disableById(String id);
+    Customer updateCart(String customerId, UpdateCartRequest request);
 }
