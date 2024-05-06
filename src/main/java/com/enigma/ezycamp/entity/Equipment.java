@@ -21,7 +21,11 @@ public class Equipment {
     private String name;
     @Column(name = "price")
     private Long price;
+    @Column(name = "stock")
+    private Integer stock;
     @OneToMany(mappedBy = "equipment")
     @JsonManagedReference
     private List<EquipmentImage> images;
+    @Column(name = "is_enable")
+    private Boolean isEnable;
 }

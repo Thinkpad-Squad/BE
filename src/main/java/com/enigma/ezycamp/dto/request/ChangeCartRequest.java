@@ -10,7 +10,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class UpdateCartRequest {
+public class ChangeCartRequest {
     @NotBlank(message = "ID peralatan tidak boleh kosong")
     private String equipmentId;
     @NotNull(message = "Kuantitas tidak boleh kosong")

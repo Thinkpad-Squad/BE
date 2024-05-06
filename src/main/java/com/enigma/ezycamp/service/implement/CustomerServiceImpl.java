@@ -1,17 +1,19 @@
 package com.enigma.ezycamp.service.implement;
 
 import com.enigma.ezycamp.dto.request.SearchRequest;
-import com.enigma.ezycamp.dto.request.UpdateCartRequest;
+import com.enigma.ezycamp.dto.request.ChangeCartRequest;
 import com.enigma.ezycamp.dto.request.UpdateCustomerRequest;
 import com.enigma.ezycamp.entity.Cart;
 import com.enigma.ezycamp.entity.Customer;
 import com.enigma.ezycamp.entity.Equipment;
 import com.enigma.ezycamp.entity.UserAccount;
 import com.enigma.ezycamp.repository.CustomerRepository;
+import com.enigma.ezycamp.service.CartService;
 import com.enigma.ezycamp.service.CustomerService;
 import com.enigma.ezycamp.service.EquipmentService;
 import com.enigma.ezycamp.util.ValidationUtil;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -25,10 +27,11 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class CustomerServiceImpl implements CustomerService {
     private final CustomerRepository customerRepository;
-    private final EquipmentService equipmentService;
     private final ValidationUtil validationUtil;
+    private final CartService cartService;
 
     @Transactional(rollbackFor = Exception.class)
     @Override
@@ -77,34 +80,38 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public Customer updateCart(String customerId, UpdateCartRequest request) {
+    public Customer updateCart(String customerId, ChangeCartRequest request) {
         validationUtil.validate(request);
         Customer customer = getCustomerById(customerId);
-        Equipment equipment = equipmentService.getEquipmentById(request.getEquipmentId());
         if(customer.getCarts() == null || customer.getCarts().isEmpty()){
-            List<Cart> carts = List.of(Cart.builder().customer(customer).quantity(request.getQuantity())
-                    .equipment(equipment).build());
-            customer.setCarts(carts);
-            return customerRepository.saveAndFlush(customer);
+            Cart cart = cartService.addCart(customer, request);
+            customer.setCarts(List.of(cart));
+            return customer;
         } else {
             List<Cart> carts = customer.getCarts();
             for (int i = 0; i<customer.getCarts().size(); i++){
-                if(customer.getCarts().get(i).getEquipment().equals(equipment)){
+                log.info(carts.get(i).getEquipment().getId());
+                log.info(request.getEquipmentId());
+                log.info(String.valueOf(carts.get(i).getEquipment().getId().equals(request.getEquipmentId())));
+                if(carts.get(i).getEquipment().getId().equals(request.getEquipmentId())){
                     Cart cart = carts.get(i);
-                    if(request.getQuantity() == 0) carts.remove(cart);
+                    if(request.getQuantity() == 0) {
+                        carts.remove(cart);
+                        cartService.deleteCart(cart);
+                    }
                     else {
-                        cart.setQuantity(request.getQuantity());
-                        carts.set(i, cart);
+                        Cart cartUpdate = cartService.updateCart(cart, request.getQuantity());
+                        carts.set(i, cartUpdate);
                     }
                     customer.setCarts(carts);
-                    return customerRepository.saveAndFlush(customer);
+                    return customer;
                 }
             }
             if(request.getQuantity() == 0) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Keranjang tidak bisa dibuat dengan kuantitas 0");
-            carts.add(Cart.builder().customer(customer).equipment(equipment)
-                    .quantity(request.getQuantity()).build());
+            Cart cart = cartService.addCart(customer, request);
+            carts.add(cart);
             customer.setCarts(carts);
-            return customerRepository.saveAndFlush(customer);
+            return customer;
         }
     }
 }

@@ -1,7 +1,7 @@
 package com.enigma.ezycamp.controller;
 
 import com.enigma.ezycamp.dto.request.SearchRequest;
-import com.enigma.ezycamp.dto.request.UpdateCartRequest;
+import com.enigma.ezycamp.dto.request.ChangeCartRequest;
 import com.enigma.ezycamp.dto.request.UpdateCustomerRequest;
 import com.enigma.ezycamp.dto.response.PagingResponse;
 import com.enigma.ezycamp.dto.response.WebResponse;
@@ -83,7 +83,7 @@ public class CustomerController {
     @SecurityRequirement(name = "Bearer Authentication")
     @PreAuthorize("hasRole('ADMIN') or @authenticatedUser.hasCustomerId(#id)")
     @PutMapping(path = "/{id}/carts", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<WebResponse<Customer>> changeCart(@PathVariable String id, @RequestBody UpdateCartRequest request){
+    public ResponseEntity<WebResponse<Customer>> changeCart(@PathVariable String id, @RequestBody ChangeCartRequest request){
         Customer customer = customerService.updateCart(id, request);
         WebResponse<Customer> response = WebResponse.<Customer>builder().statusCode(HttpStatus.OK.value())
                 .message("Berhasil mengubah keranjang").data(customer).build();
