@@ -10,6 +10,7 @@ import com.enigma.ezycamp.entity.UserAccount;
 import com.enigma.ezycamp.repository.CustomerRepository;
 import com.enigma.ezycamp.service.CustomerService;
 import com.enigma.ezycamp.service.EquipmentService;
+import com.enigma.ezycamp.util.ValidationUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -27,6 +28,7 @@ import java.util.List;
 public class CustomerServiceImpl implements CustomerService {
     private final CustomerRepository customerRepository;
     private final EquipmentService equipmentService;
+    private final ValidationUtil validationUtil;
 
     @Transactional(rollbackFor = Exception.class)
     @Override
@@ -46,13 +48,14 @@ public class CustomerServiceImpl implements CustomerService {
         if(request.getPage()<1) request.setPage(1);
         if(request.getSize()<1) request.setSize(10);
         Pageable pageable = PageRequest.of(request.getPage() -1, request.getSize(), Sort.by(Sort.Direction.fromString(request.getDirection()), request.getSortBy()));
-        if(request.getName()==null) return customerRepository.findAllCustomer(pageable);
-        else return customerRepository.findByNameCustomer("%"+request.getName()+"%", pageable);
+        if(request.getParam()==null) return customerRepository.findAllCustomer(pageable);
+        else return customerRepository.findByNameCustomer("%"+request.getParam()+"%", pageable);
     }
 
     @Transactional(rollbackFor = Exception.class)
     @Override
     public Customer updateCustomer(UpdateCustomerRequest request) {
+        validationUtil.validate(request);
         Customer customer = getCustomerById(request.getId());
         UserAccount account = customer.getUserAccount();
         customer.setName(request.getName());
@@ -75,6 +78,7 @@ public class CustomerServiceImpl implements CustomerService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public Customer updateCart(String customerId, UpdateCartRequest request) {
+        validationUtil.validate(request);
         Customer customer = getCustomerById(customerId);
         Equipment equipment = equipmentService.getEquipmentById(request.getEquipmentId());
         if(customer.getCarts() == null || customer.getCarts().isEmpty()){

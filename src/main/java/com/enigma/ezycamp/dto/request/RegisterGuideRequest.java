@@ -24,8 +24,9 @@ public class RegisterGuideRequest {
     @Min(value = 0, message = "Harga jasa pemandu tidak boleh kurang dari 0")
     private Long price;
     @NotNull(message = "Foto tidak boleh kosong")
+    @Size(max = 10485760, message = "Ukuran file gambar tidak boleh melebihi 10MB")
     private List<MultipartFile> images;
-    @NotBlank(message = "ID lokasi wisata tidak boleh kosong")
+    @NotBlank(message = "ID lokasi tidak boleh kosong")
     private String location;
     @NotBlank(message = "Username tidak boleh kosong")
     @Length(min = 6, message = "Username tidak boleh kurang dari 6 karakter")

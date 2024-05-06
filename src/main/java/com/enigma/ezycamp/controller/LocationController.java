@@ -67,7 +67,7 @@ public class LocationController {
             @RequestParam(name = "direction", defaultValue = "asc") String direction,
             @RequestParam(name = "name", required = false) String name
     ){
-        SearchRequest request = SearchRequest.builder().name(name).direction(direction)
+        SearchRequest request = SearchRequest.builder().param(name).direction(direction)
                 .page(page).size(size).sortBy(sortBy).build();
         Page<Location> locations = locationService.getAll(request);
         PagingResponse pagingResponse = PagingResponse.builder()
@@ -85,7 +85,7 @@ public class LocationController {
 
     @SecurityRequirement(name = "Bearer Authentication")
     @PreAuthorize("hasAnyRole('ADMIN','GUIDE')")
-    @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(path = "/guide", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<WebResponse<Location>> updateByGuide(@RequestBody UpdateByGuideRequest request){
         Location location = locationService.updateByGuide(request);
         WebResponse<Location> response = WebResponse.<Location>builder().statusCode(HttpStatus.OK.value())

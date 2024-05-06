@@ -48,7 +48,7 @@ public class CustomerController {
             @RequestParam(name = "name", required = false) String name
     ){
         SearchRequest request = SearchRequest.builder().sortBy(sortBy).size(size)
-                .page(page).direction(direction).name(name).build();
+                .page(page).direction(direction).param(name).build();
         Page<Customer> customers = customerService.getAllCustomer(request);
         PagingResponse pagingResponse = PagingResponse.builder().totalPages(customers.getTotalPages())
                 .totalElement(customers.getTotalElements()).page(customers.getPageable().getPageNumber()+1)
@@ -71,7 +71,7 @@ public class CustomerController {
     }
 
     @SecurityRequirement(name = "Bearer Authentication")
-    @PreAuthorize("hasRole('ADMIN') or @authenticatedUser.hasCustomerId(#request.id)")
+    @PreAuthorize("hasRole('ADMIN') or @authenticatedUser.hasCustomerId(#id)")
     @DeleteMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<WebResponse> disableCustomerById(@PathVariable String id){
         customerService.disableById(id);
@@ -82,7 +82,7 @@ public class CustomerController {
 
     @SecurityRequirement(name = "Bearer Authentication")
     @PreAuthorize("hasRole('ADMIN') or @authenticatedUser.hasCustomerId(#id)")
-    @PutMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(path = "/{id}/carts", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<WebResponse<Customer>> changeCart(@PathVariable String id, @RequestBody UpdateCartRequest request){
         Customer customer = customerService.updateCart(id, request);
         WebResponse<Customer> response = WebResponse.<Customer>builder().statusCode(HttpStatus.OK.value())

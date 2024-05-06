@@ -50,7 +50,7 @@ public class LocationServiceImpl implements LocationService {
     @Transactional(readOnly = true)
     @Override
     public Location getById(String id) {
-        return locationRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Lokasi wisata tidak ditemukan"));
+        return locationRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Lokasi tidak ditemukan"));
     }
 
     @Transactional(readOnly = true)
@@ -59,13 +59,14 @@ public class LocationServiceImpl implements LocationService {
         if(request.getPage()<1) request.setPage(1);
         if(request.getSize()<1) request.setSize(10);
         Pageable pageable = PageRequest.of(request.getPage() -1, request.getSize(), Sort.by(Sort.Direction.fromString(request.getDirection()), request.getSortBy()));
-        if(request.getName()==null) return locationRepository.findAll(pageable);
-        else return locationRepository.findByNameLocation("%"+request.getName()+"%", pageable);
+        if(request.getParam()==null) return locationRepository.findAll(pageable);
+        else return locationRepository.findByNameLocation("%"+request.getParam()+"%", pageable);
     }
 
     @Transactional(rollbackFor = Exception.class)
     @Override
     public Location updateByGuide(UpdateByGuideRequest request) {
+        validationUtil.validate(request);
         Location location = getById(request.getId());
         location.setRecommendedActivity(request.getRecommendationActivity());
         location.setSafetyTips(request.getSafetyTips());

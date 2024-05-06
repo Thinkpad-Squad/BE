@@ -89,7 +89,7 @@ public class AuthServiceImpl implements AuthService {
         userAccountRepository.saveAndFlush(account);
         Location location = locationService.getById(request.getLocation());
         Guide guide = Guide.builder().name(request.getName()).phone(request.getPhone())
-                .price(request.getPrice()).location(location).build();
+                .price(request.getPrice()).location(location).userAccount(account).build();
         List<GuideImage> images = new ArrayList<>();
         for (MultipartFile image:request.getImages()){
             GuideImage imageAdded = guideImageService.addImage(guide, image);
@@ -102,6 +102,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public LoginResponse login(LoginRequest request) {
+        validationUtil.validate(request);
         Authentication auth =new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword());
         Authentication authenticate =authenticationManager.authenticate(auth);
         SecurityContextHolder.getContext().setAuthentication(authenticate);

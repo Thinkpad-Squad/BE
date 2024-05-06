@@ -3,6 +3,7 @@ package com.enigma.ezycamp.service.implement;
 import com.enigma.ezycamp.entity.Equipment;
 import com.enigma.ezycamp.repository.EquipmentRepository;
 import com.enigma.ezycamp.service.EquipmentService;
+import com.enigma.ezycamp.util.ValidationUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -13,6 +14,7 @@ import org.springframework.web.server.ResponseStatusException;
 @RequiredArgsConstructor
 public class EquipmentServiceImpl implements EquipmentService {
     private final EquipmentRepository equipmentRepository;
+    private final ValidationUtil validationUtil;
 
     @Transactional(readOnly = true)
     @Override

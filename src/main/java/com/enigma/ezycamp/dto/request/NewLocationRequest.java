@@ -25,5 +25,6 @@ public class NewLocationRequest {
     private String recommendedActivity;
     private String safetyTips;
     @NotNull(message = "Gambar lokasi tidak boleh kosong")
+    @Size(max = 10485760, message = "Ukuran file gambar tidak boleh melebihi 10MB")
     private List<MultipartFile> images;
 }

@@ -30,9 +30,6 @@ public class Guide {
     @ManyToOne
     @JoinColumn(name = "location_id", referencedColumnName = "id")
     private Location location;
-    @OneToMany(mappedBy = "guide")
-    @JsonManagedReference
-    private List<ReviewGuide> reviews;
     @OneToOne
     @JoinColumn(name = "user_account_id")
     private UserAccount userAccount;

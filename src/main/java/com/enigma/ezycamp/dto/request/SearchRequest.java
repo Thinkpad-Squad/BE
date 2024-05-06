@@ -12,5 +12,5 @@ public class SearchRequest {
     private Integer page;
     private String sortBy;
     private String direction;
-    private String name;
+    private String param;
 }
