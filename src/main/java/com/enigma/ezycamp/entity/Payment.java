@@ -1,5 +1,6 @@
 package com.enigma.ezycamp.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -18,7 +19,7 @@ public class Payment {
     private String status;
     @Column(name = "redirect_url")
     private String url;
-    @OneToOne
-    @JoinColumn(name = "order_id")
+    @OneToOne(mappedBy = "payment")
+    @JsonBackReference
     private Order order;
 }

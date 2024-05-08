@@ -1,5 +1,7 @@
 package com.enigma.ezycamp.entity;
 
+import com.enigma.ezycamp.constant.OrderType;
+import com.enigma.ezycamp.constant.PaymentType;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -33,7 +35,18 @@ public class Order {
     @Temporal(TemporalType.DATE)
     @JsonFormat(pattern = "yyyy-MM-dd")
     private Date date;
+    @Column(name = "order_type")
+    private OrderType orderType;
+    @Column(name = "payment_type")
+    private PaymentType paymentType;
     @OneToMany(mappedBy = "order")
     @JsonManagedReference
     private List<OrderEquipment> orderEquipments;
+    @OneToOne
+    @JoinColumn(name = "order_guarantee_id")
+    private OrderGuaranteeImage orderGuaranteeImage;
+    @OneToOne
+    @JoinColumn(name = "payment_id", unique = true)
+    @JsonManagedReference
+    private Payment payment;
 }

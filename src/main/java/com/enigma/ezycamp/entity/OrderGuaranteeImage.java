@@ -23,7 +23,4 @@ public class OrderGuaranteeImage {
     private String originalName;
     @Column(name = "size")
     private Long size;
-    @OneToOne
-    @JoinColumn(name = "order_id")
-    private Order order;
 }

@@ -20,7 +20,7 @@ public class OrderEquipment {
     private Equipment equipment;
     @Column(name = "quantity")
     private Integer quantity;
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "order_id", referencedColumnName = "id")
     @JsonBackReference
     private Order order;
