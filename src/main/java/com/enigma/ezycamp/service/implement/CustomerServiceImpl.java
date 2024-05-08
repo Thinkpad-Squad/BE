@@ -47,6 +47,12 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Transactional(readOnly = true)
     @Override
+    public Customer getCustomerByUsername(String username) {
+        return customerRepository.findByUsernameCustomer(username).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Customer tidak ditemukan"));
+    }
+
+    @Transactional(readOnly = true)
+    @Override
     public Page<Customer> getAllCustomer(SearchRequest request) {
         if(request.getPage()<1) request.setPage(1);
         if(request.getSize()<1) request.setSize(10);

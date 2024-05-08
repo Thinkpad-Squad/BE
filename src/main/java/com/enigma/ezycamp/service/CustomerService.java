@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 public interface CustomerService {
     void addCustomer(Customer customer);
     Customer getCustomerById(String id);
+    Customer getCustomerByUsername(String username);
     Page<Customer> getAllCustomer(SearchRequest request);
     Customer updateCustomer(UpdateCustomerRequest customer);
     void disableById(String id);
