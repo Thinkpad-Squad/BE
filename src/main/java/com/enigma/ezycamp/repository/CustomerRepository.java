@@ -18,4 +18,6 @@ public interface CustomerRepository extends JpaRepository<Customer, String> {
     Page<Customer> findAllCustomer(Pageable pageable);
     @Query(value = "select c.* from m_customer as c join m_user_account as ua on ua.id = c.user_account_id where c.name like :name and ua.is_enable = true", nativeQuery = true)
     Page<Customer> findByNameCustomer(@Param("name") String name, Pageable pageable);
+    @Query(value = "select c.* from m_customer as c join m_user_account as ua on ua.id = c.user_account_id where ua.username = :username and ua.is_enable = true", nativeQuery = true)
+    Optional<Customer> findByUsernameCustomer(@Param("username") String username);
 }

@@ -18,19 +18,30 @@ public class AuthenticatedUser {
     private final CustomerService customerService;
     private final UserService userService;
 
-    public boolean hasGuideId(String id){
+    public boolean hasGuideId(String id) {
         Guide guide = guideService.getGuideById(id);
         UserAccount guideAccount = (UserAccount) userService.loadUserByUsername(guide.getUserAccount().getUsername());
         UserAccount account = userService.getByContext();
-        if(!account.getId().equals(guideAccount.getId())) throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Forbidden, akses ditolak");
+        if (!account.getId().equals(guideAccount.getId()))
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Forbidden, akses ditolak");
         return true;
     }
 
-    public boolean hasCustomerId(String id){
+    public boolean hasCustomerId(String id) {
         Customer customer = customerService.getCustomerById(id);
         UserAccount customerAccount = (UserAccount) userService.loadUserByUsername(customer.getUserAccount().getUsername());
         UserAccount account = userService.getByContext();
-        if(!account.getId().equals(customerAccount.getId())) throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Forbidden, akses ditolak");
+        if (!account.getId().equals(customerAccount.getId()))
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Forbidden, akses ditolak");
+        return true;
+    }
+
+    public boolean hasUsername(String username) {
+        Customer customer = customerService.getCustomerByUsername(username);
+        UserAccount customerAccount = (UserAccount) userService.loadUserByUsername(customer.getUserAccount().getUsername());
+        UserAccount account = userService.getByContext();
+        if (!account.getUsername().equals(customerAccount.getUsername()))
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Forbidden, akses ditolak");
         return true;
     }
 }
