@@ -29,8 +29,19 @@ public class CustomerController {
     @SecurityRequirement(name = "Bearer Authentication")
     @PreAuthorize("hasRole('ADMIN') or @authenticatedUser.hasCustomerId(#id)")
     @GetMapping(path = "/{id}")
-    public ResponseEntity<WebResponse<Customer>> findCustomerById(@PathVariable String id){
+    public ResponseEntity<WebResponse<Customer>> findCustomerById(@PathVariable String id) {
         Customer customer = customerService.getCustomerById(id);
+        WebResponse<Customer> response = WebResponse.<Customer>builder()
+                .statusCode(HttpStatus.OK.value()).message("Berhasil mendapatkan data customer")
+                .data(customer).build();
+        return ResponseEntity.ok(response);
+    }
+
+    @SecurityRequirement(name = "Bearer Authentication")
+    @PreAuthorize("hasRole('ADMIN') or @authenticatedUser.hasUsername(#username)")
+    @GetMapping(path = "/username/{username}")
+    public ResponseEntity<WebResponse<Customer>> findCustomerByUsername(@PathVariable String username) {
+        Customer customer = customerService.getCustomerByUsername(username);
         WebResponse<Customer> response = WebResponse.<Customer>builder()
                 .statusCode(HttpStatus.OK.value()).message("Berhasil mendapatkan data customer")
                 .data(customer).build();
@@ -45,13 +56,13 @@ public class CustomerController {
             @RequestParam(name = "size", defaultValue = "10") Integer size,
             @RequestParam(name = "sortBy", defaultValue = "name") String sortBy,
             @RequestParam(name = "direction", defaultValue = "asc") String direction,
-            @RequestParam(name = "name", required = false) String name
-    ){
+            @RequestParam(name = "name", required = false) String name) {
         SearchRequest request = SearchRequest.builder().sortBy(sortBy).size(size)
                 .page(page).direction(direction).param(name).build();
         Page<Customer> customers = customerService.getAllCustomer(request);
         PagingResponse pagingResponse = PagingResponse.builder().totalPages(customers.getTotalPages())
-                .totalElement(customers.getTotalElements()).page(customers.getPageable().getPageNumber()+1)
+                .totalElement(customers.getTotalElements())
+                .page(customers.getPageable().getPageNumber() + 1)
                 .size(customers.getPageable().getPageSize()).hasNext(customers.hasNext())
                 .hasPrevious(customers.hasPrevious()).build();
         WebResponse<List<Customer>> response = WebResponse.<List<Customer>>builder()
@@ -63,7 +74,7 @@ public class CustomerController {
     @SecurityRequirement(name = "Bearer Authentication")
     @PreAuthorize("hasRole('ADMIN') or @authenticatedUser.hasCustomerId(#request.id)")
     @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<WebResponse<Customer>> updateCustomer(@RequestBody UpdateCustomerRequest request){
+    public ResponseEntity<WebResponse<Customer>> updateCustomer(@RequestBody UpdateCustomerRequest request) {
         Customer customer = customerService.updateCustomer(request);
         WebResponse<Customer> response = WebResponse.<Customer>builder().statusCode(HttpStatus.OK.value())
                 .message("Berhasil memperbarui data customer").data(customer).build();
@@ -73,7 +84,7 @@ public class CustomerController {
     @SecurityRequirement(name = "Bearer Authentication")
     @PreAuthorize("hasRole('ADMIN') or @authenticatedUser.hasCustomerId(#id)")
     @DeleteMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<WebResponse> disableCustomerById(@PathVariable String id){
+    public ResponseEntity<WebResponse> disableCustomerById(@PathVariable String id) {
         customerService.disableById(id);
         WebResponse response = WebResponse.builder().statusCode(HttpStatus.OK.value())
                 .message("Berhasil menghapus data customer").build();
@@ -83,7 +94,8 @@ public class CustomerController {
     @SecurityRequirement(name = "Bearer Authentication")
     @PreAuthorize("hasRole('ADMIN') or @authenticatedUser.hasCustomerId(#id)")
     @PutMapping(path = "/{id}/carts", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<WebResponse<Customer>> changeCart(@PathVariable String id, @RequestBody ChangeCartRequest request){
+    public ResponseEntity<WebResponse<Customer>> changeCart(@PathVariable String id,
+                                                            @RequestBody ChangeCartRequest request) {
         Customer customer = customerService.updateCart(id, request);
         WebResponse<Customer> response = WebResponse.<Customer>builder().statusCode(HttpStatus.OK.value())
                 .message("Berhasil mengubah keranjang").data(customer).build();
