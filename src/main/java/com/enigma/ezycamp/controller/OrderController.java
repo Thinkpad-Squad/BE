@@ -83,7 +83,7 @@ public class OrderController {
     }
 
     @SecurityRequirement(name = "Bearer Authentication")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or @authenticatedUser.hasCustomerId(#id)")
     @GetMapping(path = "/customers/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<WebResponse<List<Order>>> getAllOrderByCustomerId(
             @RequestParam(name = "page", defaultValue = "1") Integer page,
@@ -110,7 +110,7 @@ public class OrderController {
     }
 
     @SecurityRequirement(name = "Bearer Authentication")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or @authenticatedUser.hasGuideId(#id)")
     @GetMapping(path = "/guide/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<WebResponse<List<Order>>> getAllOrderByGuideId(
             @RequestParam(name = "page", defaultValue = "1") Integer page,
