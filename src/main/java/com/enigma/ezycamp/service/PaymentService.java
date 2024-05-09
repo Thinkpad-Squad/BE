@@ -5,5 +5,6 @@ import com.enigma.ezycamp.entity.Payment;
 
 public interface PaymentService {
     Payment addPayment(Order order);
+    Payment findById(String id);
     void checkFailedAndUpdateStatus();
 }

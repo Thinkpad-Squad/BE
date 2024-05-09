@@ -22,7 +22,7 @@ public class NewOrderRequest {
     private String locationId;
     @NotNull(message = "Tanggal transaksi tidak boleh kosong")
     private String date;
-    @NotNull(message = "Daftar peralatang yang disewa tidak boleh kosong")
+    @NotNull(message = "Daftar peralatan yang disewa tidak boleh kosong")
     private List<OrderEquipmentRequest> orderEquipmentRequests;
     @NotNull(message = "Gambar jaminan diperlukan untuk menyewa")
     private MultipartFile image;

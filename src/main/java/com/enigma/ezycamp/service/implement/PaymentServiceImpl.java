@@ -13,10 +13,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestClient;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Map;
@@ -64,6 +66,12 @@ public class PaymentServiceImpl implements PaymentService {
                 .url(body.get("redirect_url"))
                 .status("ordered").build();
         return paymentRepository.saveAndFlush(payment);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public Payment findById(String id){
+        return paymentRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Data pembayaran tidak ditemukan"));
     }
 
     @Transactional(rollbackFor = Exception.class)

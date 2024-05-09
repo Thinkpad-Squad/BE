@@ -39,7 +39,7 @@ public class Order {
     private OrderType orderType;
     @Column(name = "payment_type")
     private PaymentType paymentType;
-    @OneToMany(mappedBy = "order")
+    @OneToMany(mappedBy = "order", cascade = CascadeType.PERSIST)
     @JsonManagedReference
     private List<OrderEquipment> orderEquipments;
     @OneToOne
