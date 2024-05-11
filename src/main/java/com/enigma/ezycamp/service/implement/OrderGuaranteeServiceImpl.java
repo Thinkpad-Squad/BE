@@ -1,5 +1,6 @@
 package com.enigma.ezycamp.service.implement;
 
+import com.enigma.ezycamp.entity.LocationImage;
 import com.enigma.ezycamp.entity.OrderGuaranteeImage;
 import com.enigma.ezycamp.repository.OrderGuaranteeImageRepository;
 import com.enigma.ezycamp.service.OrderGuaranteeService;
@@ -7,6 +8,8 @@ import jakarta.annotation.PostConstruct;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -49,11 +52,25 @@ public class OrderGuaranteeServiceImpl implements OrderGuaranteeService {
             String name = System.currentTimeMillis()+"_"+image.getOriginalFilename();
             Path imagePath = IMAGE_PATH.resolve(name);
             Files.copy(image.getInputStream(), imagePath);
-            OrderGuaranteeImage imageSave = OrderGuaranteeImage.builder().name(name).url(imagePath.toString())
-                    .originalName(image.getOriginalFilename()).size(image.getSize()).build();
+            OrderGuaranteeImage imageSave = OrderGuaranteeImage.builder().name(name).path(imagePath.toString())
+                    .originalName(image.getOriginalFilename()).size(image.getSize())
+                    .url("/api/orders/guaranteeImages/"+name).build();
             return guaranteeImageRepository.saveAndFlush(imageSave);
         } catch (IOException e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Gagal menyimpan gambar");
+        }
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public Resource getByName(String name) {
+        try {
+            OrderGuaranteeImage image = guaranteeImageRepository.findByName(name).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "Gambar jaminan tidak ditemukan"));
+            Path filePath = Paths.get(image.getUrl());
+            if (!Files.exists(filePath)) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Gambar jaminan tidak ditemukan");
+            return new UrlResource(filePath.toUri());
+        } catch (IOException e){
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
     }
 }

@@ -34,6 +34,10 @@ public class SecurityConfiguration {
                         .requestMatchers(HttpMethod.POST,"/api/auth/login").permitAll()
                         .requestMatchers("/api-docs/**", "/swagger-ui/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/orders/status").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/orders/guaranteeImages/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/locations/images/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/guides/images/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/equipments/images/**").permitAll()
                         .anyRequest().authenticated())
                 .addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class).build();
     }
