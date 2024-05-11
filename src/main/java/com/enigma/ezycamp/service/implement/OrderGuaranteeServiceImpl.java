@@ -66,7 +66,7 @@ public class OrderGuaranteeServiceImpl implements OrderGuaranteeService {
     public Resource getByName(String name) {
         try {
             OrderGuaranteeImage image = guaranteeImageRepository.findByName(name).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "Gambar jaminan tidak ditemukan"));
-            Path filePath = Paths.get(image.getUrl());
+            Path filePath = Paths.get(image.getPath());
             if (!Files.exists(filePath)) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Gambar jaminan tidak ditemukan");
             return new UrlResource(filePath.toUri());
         } catch (IOException e){

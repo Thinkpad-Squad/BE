@@ -71,7 +71,7 @@ public class EquipmentImageServiceImpl implements EquipmentImageService {
     public Resource getByName(String name) {
         try {
             EquipmentImage image = imageRepository.findByName(name).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "Gambar peralatan tidak ditemukan"));
-            Path filePath = Paths.get(image.getUrl());
+            Path filePath = Paths.get(image.getPath());
             if (!Files.exists(filePath)) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Gambar peralatan tidak ditemukan");
             return new UrlResource(filePath.toUri());
         } catch (IOException e){

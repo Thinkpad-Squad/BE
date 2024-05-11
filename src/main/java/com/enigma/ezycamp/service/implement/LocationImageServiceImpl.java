@@ -69,7 +69,7 @@ public class LocationImageServiceImpl implements LocationImageService {
     public Resource getByName(String name) {
         try {
             LocationImage image = locationImageRepository.findByName(name).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "Gambar lokasi tidak ditemukan"));
-            Path filePath = Paths.get(image.getUrl());
+            Path filePath = Paths.get(image.getPath());
             if (!Files.exists(filePath)) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Gambar lokasi tidak ditemukan");
             return new UrlResource(filePath.toUri());
         } catch (IOException e){

@@ -67,7 +67,7 @@ public class GuideImageServiceImpl implements GuideImageService {
     public Resource getByName(String name) {
         try {
             GuideImage image = imageRepository.findByName(name).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "Gambar pemandu tidak ditemukan"));
-            Path filePath = Paths.get(image.getUrl());
+            Path filePath = Paths.get(image.getPath());
             if (!Files.exists(filePath)) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Gambar pemandu tidak ditemukan");
             return new UrlResource(filePath.toUri());
         } catch (IOException e){
