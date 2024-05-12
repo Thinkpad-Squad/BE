@@ -14,6 +14,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -26,6 +27,7 @@ import java.util.List;
 @RestController
 @RequestMapping(path = "/api/auth")
 @RequiredArgsConstructor
+@Slf4j
 public class AuthController {
     private final AuthService authService;
     private final ObjectMapper objectMapper;
@@ -42,6 +44,8 @@ public class AuthController {
     @PostMapping(path = "/registerGuide", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<WebResponse<RegisterResponse>> registerGuide(@RequestPart(name = "guide") String jsonGuide,
                                                                        @RequestPart(name = "images")List<MultipartFile> images){
+        log.info("Received request with jsonGuide: {}", jsonGuide);
+        log.info("Received request with images: {}", images);
         WebResponse<RegisterResponse> response;
         try {
             RegisterGuideRequest request = objectMapper.readValue(jsonGuide, new TypeReference<RegisterGuideRequest>() {});
