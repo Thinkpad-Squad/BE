@@ -19,6 +19,8 @@ public class Equipment {
     private String id;
     @Column(name = "name")
     private String name;
+    @Column(name = "description")
+    private String description;
     @Column(name = "price")
     private Long price;
     @Column(name = "stock")

@@ -27,7 +27,6 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class CustomerServiceImpl implements CustomerService {
     private final CustomerRepository customerRepository;
     private final ValidationUtil validationUtil;
@@ -96,9 +95,6 @@ public class CustomerServiceImpl implements CustomerService {
         } else {
             List<Cart> carts = customer.getCarts();
             for (int i = 0; i<customer.getCarts().size(); i++){
-                log.info(carts.get(i).getEquipment().getId());
-                log.info(request.getEquipmentId());
-                log.info(String.valueOf(carts.get(i).getEquipment().getId().equals(request.getEquipmentId())));
                 if(carts.get(i).getEquipment().getId().equals(request.getEquipmentId())){
                     Cart cart = carts.get(i);
                     if(request.getQuantity() == 0) {
