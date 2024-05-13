@@ -42,4 +42,13 @@ public class CartServiceTest {
         Cart result = cartService.addCart(customer, request);
         assertEquals(result.getQuantity(), request.getQuantity());
     }
+
+    @Test
+    void updateCart(){
+        Cart cart = Cart.builder().equipment(Equipment.builder().stock(10).build()).build();
+        Integer quantity = 1;
+        when(cartRepository.saveAndFlush(any(Cart.class))).thenReturn(cart);
+        Cart result = cartService.updateCart(cart, quantity);
+        assertEquals(result.getQuantity(), quantity);
+    }
 }

@@ -72,7 +72,7 @@ public class CustomerController {
     }
 
     @SecurityRequirement(name = "Bearer Authentication")
-    @PreAuthorize("hasRole('ADMIN') or @authenticatedUser.hasCustomerId(#request.id)")
+    @PreAuthorize("@authenticatedUser.hasCustomerId(#request.id)")
     @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<WebResponse<Customer>> updateCustomer(@RequestBody UpdateCustomerRequest request) {
         Customer customer = customerService.updateCustomer(request);
@@ -92,7 +92,7 @@ public class CustomerController {
     }
 
     @SecurityRequirement(name = "Bearer Authentication")
-    @PreAuthorize("hasRole('ADMIN') or @authenticatedUser.hasCustomerId(#id)")
+    @PreAuthorize("@authenticatedUser.hasCustomerId(#id)")
     @PutMapping(path = "/{id}/carts", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<WebResponse<Customer>> changeCart(@PathVariable String id,
                                                             @RequestBody ChangeCartRequest request) {

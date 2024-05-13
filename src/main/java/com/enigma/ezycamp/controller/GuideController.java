@@ -58,7 +58,7 @@ public class GuideController {
     }
 
     @SecurityRequirement(name = "Bearer Authentication")
-    @PreAuthorize("hasRole('ADMIN') or @authenticatedUser.hasGuideId(#request.id)")
+    @PreAuthorize("@authenticatedUser.hasGuideId(#request.id)")
     @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<WebResponse<Guide>> updateGuide(@RequestBody UpdateGuideRequest request){
         Guide guide = guideService.updateGuide(request);

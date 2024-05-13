@@ -81,6 +81,11 @@ public class CustomerServiceImpl implements CustomerService {
         account.setIsEnable(false);
         customer.setUserAccount(account);
         customerRepository.saveAndFlush(customer);
+        if(customer.getCarts() != null || !customer.getCarts().isEmpty()){
+            for (int i = 0; i < customer.getCarts().size(); i++) {
+                cartService.deleteCart(customer.getCarts().get(i));
+            }
+        }
     }
 
     @Transactional(rollbackFor = Exception.class)
