@@ -1,7 +1,6 @@
 package com.enigma.ezycamp.controller;
 
 import com.enigma.ezycamp.dto.request.NewOrderRequest;
-import com.enigma.ezycamp.dto.request.SearchOrderRequest;
 import com.enigma.ezycamp.dto.request.SearchRequest;
 import com.enigma.ezycamp.dto.request.UpdateStatusRequest;
 import com.enigma.ezycamp.dto.response.PagingResponse;
@@ -9,7 +8,6 @@ import com.enigma.ezycamp.dto.response.WebResponse;
 import com.enigma.ezycamp.entity.Order;
 import com.enigma.ezycamp.security.AuthenticatedUser;
 import com.enigma.ezycamp.service.OrderService;
-import com.enigma.ezycamp.util.ValidationUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -60,13 +58,11 @@ public class OrderController {
     public ResponseEntity<WebResponse<List<Order>>> getAllOrder(
             @RequestParam(name = "page", defaultValue = "1") Integer page,
             @RequestParam(name = "size", defaultValue = "10") Integer size,
-            @RequestParam(name = "sortBy", defaultValue = "name") String sortBy,
+            @RequestParam(name = "sortBy", defaultValue = "date") String sortBy,
             @RequestParam(name = "direction", defaultValue = "asc") String direction,
-            @RequestParam(name = "name", required = false) String name,
-            @RequestParam(name = "date", required = false) String date
+            @RequestParam(name = "orderId", required = false) String order
     ){
-        SearchOrderRequest request = SearchOrderRequest.builder().customerName(name)
-                .date(date).direction(direction).page(page).size(size).sortBy(sortBy).build();
+        SearchRequest request = SearchRequest.builder().param(order).direction(direction).page(page).size(size).sortBy(sortBy).build();
         Page<Order> orders = orderService.findAllOrder(request);
         PagingResponse pagingResponse = PagingResponse.builder()
                 .totalPages(orders.getTotalPages())

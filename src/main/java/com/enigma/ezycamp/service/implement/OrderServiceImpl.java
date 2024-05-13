@@ -1,7 +1,6 @@
 package com.enigma.ezycamp.service.implement;
 
 import com.enigma.ezycamp.dto.request.NewOrderRequest;
-import com.enigma.ezycamp.dto.request.SearchOrderRequest;
 import com.enigma.ezycamp.dto.request.SearchRequest;
 import com.enigma.ezycamp.dto.request.UpdateStatusRequest;
 import com.enigma.ezycamp.entity.*;
@@ -60,13 +59,11 @@ public class OrderServiceImpl implements OrderService {
 
     @Transactional(readOnly = true)
     @Override
-    public Page<Order> findAllOrder(SearchOrderRequest request) {
+    public Page<Order> findAllOrder(SearchRequest request) {
         if (request.getPage()<1) request.setPage(1);
         if (request.getSize()<1) request.setSize(10);
         Pageable pageable = PageRequest.of(request.getPage() -1, request.getSize(), Sort.by(Sort.Direction.fromString(request.getDirection()), request.getSortBy()));
-        if(request.getCustomerName() != null && request.getDate() != null) return orderRepository.findByCustomerNameAndDate("%"+request.getCustomerName()+"%", parseDate(request.getDate()), pageable);
-        else if (request.getCustomerName() != null) return orderRepository.findByCustomerName(request.getCustomerName(), pageable);
-        else if (request.getDate() != null) return orderRepository.findAllByDate(parseDate(request.getDate()), pageable);
+        if(request.getParam() != null) return orderRepository.findByOrderId(request.getParam(), pageable);
         else return orderRepository.findAll(pageable);
     }
 

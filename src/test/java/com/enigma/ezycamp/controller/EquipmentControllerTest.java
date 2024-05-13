@@ -16,6 +16,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.*;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -67,9 +68,9 @@ public class EquipmentControllerTest {
                 } );
     }
 
-    @WithMockUser
+    @WithMockUser(roles = "ADMIN")
     @Test
-    void findAllEquipment() throws Exception{
+    void findAllEquipment() throws Exception {
         SearchRequest request = SearchRequest.builder().page(1).size(10).sortBy("name").direction("asc").build();
         List<Equipment> equipments = List.of(Equipment.builder().build());
         Pageable page = PageRequest.of(request.getPage() -1, request.getSize(), Sort.by(Sort.Direction.fromString(request.getDirection()), request.getSortBy()));
@@ -86,11 +87,14 @@ public class EquipmentControllerTest {
     @WithMockUser(roles = "ADMIN")
     @Test
     void updateEquipment() throws Exception{
-        String jsonEq = "{\"id\": \"id\", \"name\": \"name\", \"description\": \"description\", \"price\": 1, \"stock\": 1 }";
+        String jsonEq = "{\"name\": \"name\", \"description\": \"description\", \"price\": 1, \"stock\": 1 }";
         MockMultipartFile file = new MockMultipartFile("images", "image.jpg", "image/jpg", "image".getBytes());
         MockMultipartFile equipment = new MockMultipartFile("equipment", "equipment", "text/plain", jsonEq.getBytes());
         Equipment equipmentNew = Equipment.builder().name("name").price(1L).build();
-        when(equipmentService.updateEquipment(any(UpdateEquipmentRequest.class))).thenReturn(equipmentNew);
-        mockMvc.perform(MockMvcRequestBuilders.multipart("/api/equipments").file(file).file(equipment).accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
+        when(equipmentService.addEquipment(any(NewEquipmentRequest.class))).thenReturn(equipmentNew);
+        mockMvc.perform(MockMvcRequestBuilders.multipart(HttpMethod.PUT,"/api/equipments").file(file).file(equipment).accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
+//                .andDo(result -> {WebResponse<Equipment> response = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<WebResponse<Equipment>>() {});
+//            assertEquals(200, response.getStatusCode());
+//        });
     }
 }

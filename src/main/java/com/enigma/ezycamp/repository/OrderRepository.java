@@ -12,11 +12,8 @@ import java.util.Date;
 
 @Repository
 public interface OrderRepository extends JpaRepository<Order, String> {
-    @Query(value = "select o.* from t_order as o join m_customer as c on c.id = o.customer_id where c.name ilike :name and date(o.date) = :date", nativeQuery = true)
-    Page<Order> findByCustomerNameAndDate(@Param("name") String customerName, @Param("date") Date date, Pageable pageable);
-    @Query(value = "select o.* from t_order as o join m_customer as c on c.id = o.customer_id where c.name ilike :name", nativeQuery = true)
-    Page<Order> findByCustomerName(@Param("name") String customerName, Pageable pageable);
-    Page<Order> findAllByDate(Date date, Pageable pageable);
+    @Query(value = "select * from t_order where id = :id", nativeQuery = true)
+    Page<Order> findByOrderId(@Param("id") String id, Pageable pageable);
     @Query(value = "select * from t_order where customer_id = :id", nativeQuery = true)
     Page<Order> findAllByCustomerId(@Param("id") String customerId, Pageable pageable);
     @Query(value = "select * from t_order where guide_id = :id", nativeQuery = true)
