@@ -44,7 +44,7 @@ public class OrderServiceImpl implements OrderService {
         Location location = locationService.getById(request.getLocationId());
         Order order = Order.builder().customer(customer).guide(guide).location(location)
                 .date(parseDate(request.getDate())).orderType(request.getOrderType())
-                .paymentType(request.getPaymentType()).build();
+                .paymentType(request.getPaymentType()).day(request.getDay()).build();
         OrderGuaranteeImage guaranteeImage = guaranteeService.addGuarantee(request.getImage());
         order.setOrderGuaranteeImage(guaranteeImage);
         List<OrderEquipment> orderEquipments = request.getOrderEquipmentRequests().stream().map(eq -> {

@@ -35,6 +35,8 @@ public class Order {
     @Temporal(TemporalType.DATE)
     @JsonFormat(pattern = "yyyy-MM-dd")
     private Date date;
+    @Column(name = "rent_day")
+    private Integer day;
     @Column(name = "order_type")
     private OrderType orderType;
     @Column(name = "payment_type")
