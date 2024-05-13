@@ -16,6 +16,6 @@ public interface EquipmentRepository extends JpaRepository<Equipment, String > {
     Optional<Equipment> findEquipmentById(@Param("id") String id);
     @Query(value = "select * from m_equipment where is_enable = true", nativeQuery = true)
     Page<Equipment> findAllEquipment(Pageable pageable);
-    @Query(value = "select * from m_equipment where name like :name and is_enable = true", nativeQuery = true)
+    @Query(value = "select * from m_equipment where name ilike :name and is_enable = true", nativeQuery = true)
     Page<Equipment> findEquipmentByName(@Param("name") String name, Pageable pageable);
 }

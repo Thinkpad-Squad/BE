@@ -10,6 +10,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface LocationRepository extends JpaRepository<Location, String> {
-    @Query(value = "select * from m_location where name like :name", nativeQuery = true)
+    @Query(value = "select * from m_location where name ilike :name", nativeQuery = true)
     Page<Location> findByNameLocation(@Param("name") String name, Pageable pageable);
 }
