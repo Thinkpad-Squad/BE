@@ -84,7 +84,7 @@ public class EquipmentImageServiceImpl implements EquipmentImageService {
     public void delete(EquipmentImage image) {
         try {
             imageRepository.findById(image.getId()).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "Gambar peralatan tidak ditemukan"));
-            Path filePath = Paths.get(image.getUrl());
+            Path filePath = Paths.get(image.getPath());
             if (!Files.exists(filePath)) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Gambar peralatan tidak ditemukan");
             Files.delete(filePath);
             imageRepository.delete(image);

@@ -1,8 +1,11 @@
 package com.enigma.ezycamp.service;
 
+import com.enigma.ezycamp.dto.request.ChangeCartRequest;
 import com.enigma.ezycamp.dto.request.SearchRequest;
 import com.enigma.ezycamp.dto.request.UpdateCustomerRequest;
+import com.enigma.ezycamp.entity.Cart;
 import com.enigma.ezycamp.entity.Customer;
+import com.enigma.ezycamp.entity.Equipment;
 import com.enigma.ezycamp.entity.UserAccount;
 import com.enigma.ezycamp.repository.CustomerRepository;
 import com.enigma.ezycamp.service.implement.CustomerServiceImpl;
@@ -95,5 +98,18 @@ public class CustomerServiceTest {
         when(customerRepository.saveAndFlush(any(Customer.class))).thenReturn(customer);
         customerService.disableById(id);
         verify(customerRepository, times(1)).saveAndFlush(customer);
+    }
+
+    @Test
+    void updateCart(){
+        String customerId = "1";
+        ChangeCartRequest request = ChangeCartRequest.builder().equipmentId("1").quantity(1).build();
+        Customer customer = Customer.builder().id(customerId).build();
+        when(customerRepository.findByIdCustomer(anyString())).thenReturn(Optional.of(customer));
+        Cart cart = Cart.builder().id("1").quantity(request.getQuantity()).customer(customer).equipment(Equipment.builder().id(request.getEquipmentId()).build()).build();
+        when(cartService.addCart(any(Customer.class), any(ChangeCartRequest.class))).thenReturn(cart);
+        Customer result = customerService.updateCart(customerId, request);
+        assertEquals(result.getId(), customerId);
+        assertEquals(result.getCarts().get(0).getQuantity(), request.getQuantity());
     }
 }
