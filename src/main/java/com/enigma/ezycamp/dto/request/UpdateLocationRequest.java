@@ -1,9 +1,5 @@
 package com.enigma.ezycamp.dto.request;
 
-import com.enigma.ezycamp.entity.LocationImage;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import jakarta.persistence.Column;
-import jakarta.persistence.OneToMany;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -17,7 +13,9 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class NewLocationRequest {
+public class UpdateLocationRequest {
+    @NotBlank(message = "ID lokasi tidak boleh kosong")
+    private String id;
     @NotBlank(message = "Nama lokasi tidak boleh kosong")
     private String name;
     @NotBlank(message = "Deskripsi tidak boleh kosong")
@@ -26,7 +24,5 @@ public class NewLocationRequest {
     private String safetyTips;
     @NotBlank(message = "Alamat toko cabang terdekat tidak boleh kosong")
     private String nearestStoreAddress;
-    @NotNull(message = "Gambar lokasi tidak boleh kosong")
-    @Size(max = 10485760, message = "Ukuran file gambar tidak boleh melebihi 10MB")
     private List<MultipartFile> images;
 }

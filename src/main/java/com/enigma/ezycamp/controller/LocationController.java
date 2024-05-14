@@ -3,8 +3,10 @@ package com.enigma.ezycamp.controller;
 import com.enigma.ezycamp.dto.request.NewLocationRequest;
 import com.enigma.ezycamp.dto.request.SearchRequest;
 import com.enigma.ezycamp.dto.request.UpdateByGuideRequest;
+import com.enigma.ezycamp.dto.request.UpdateLocationRequest;
 import com.enigma.ezycamp.dto.response.PagingResponse;
 import com.enigma.ezycamp.dto.response.WebResponse;
+import com.enigma.ezycamp.entity.Location;
 import com.enigma.ezycamp.entity.Location;
 import com.enigma.ezycamp.service.LocationService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -81,6 +83,26 @@ public class LocationController {
                 .statusCode(HttpStatus.OK.value()).message("Berhasil mendapatkan data lokasi")
                 .data(locations.getContent()).paging(pagingResponse).build();
         return ResponseEntity.ok(response);
+    }
+
+    @SecurityRequirement(name = "Bearer Authentication")
+    @PreAuthorize("hasRole('ADMIN')")
+    @PutMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<WebResponse<Location>> updateLocation(@RequestPart(name = "location") String jsonLocation, @RequestPart(name = "images", required = false)List<MultipartFile> images){
+        WebResponse<Location> response;
+        try {
+            UpdateLocationRequest request = objectMapper.readValue(jsonLocation, new TypeReference<UpdateLocationRequest>() {});
+            request.setImages(images);
+            Location location = locationService.updateLocation(request);
+            response = WebResponse.<Location>builder()
+                    .statusCode(HttpStatus.OK.value()).message("Berhasil memperbarui data lokasi")
+                    .data(location).build();
+            return ResponseEntity.ok(response);
+        } catch (JsonProcessingException e) {
+            response = WebResponse.<Location>builder().statusCode(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                    .message("Gagal memperbarui data lokasi").build();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
     }
 
     @SecurityRequirement(name = "Bearer Authentication")

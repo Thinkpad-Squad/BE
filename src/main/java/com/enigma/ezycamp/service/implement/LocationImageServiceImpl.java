@@ -76,4 +76,18 @@ public class LocationImageServiceImpl implements LocationImageService {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
     }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void delete(LocationImage locationImage) {
+        try {
+            locationImageRepository.findById(locationImage.getId()).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "Gambar lokasi tidak ditemukan"));
+            Path filePath = Paths.get(locationImage.getPath());
+            if (!Files.exists(filePath)) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Gambar lokasi tidak ditemukan");
+            Files.delete(filePath);
+            locationImageRepository.delete(locationImage);
+        } catch (IOException e){
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
+    }
 }

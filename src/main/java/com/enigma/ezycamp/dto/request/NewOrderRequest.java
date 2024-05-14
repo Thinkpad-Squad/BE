@@ -26,6 +26,7 @@ public class NewOrderRequest {
     @NotNull(message = "Hari peminjaman tidak boleh kosong")
     @Min(value = 1, message = "Hari peminjaman tidak boleh kurang dari 1")
     private Integer day;
+    private String sentAddress;
     @NotNull(message = "Daftar peralatan yang disewa tidak boleh kosong")
     private List<OrderEquipmentRequest> orderEquipmentRequests;
     @NotNull(message = "Gambar jaminan diperlukan untuk menyewa")

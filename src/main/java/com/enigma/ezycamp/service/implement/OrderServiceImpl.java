@@ -1,5 +1,6 @@
 package com.enigma.ezycamp.service.implement;
 
+import com.enigma.ezycamp.constant.OrderStatus;
 import com.enigma.ezycamp.dto.request.NewOrderRequest;
 import com.enigma.ezycamp.dto.request.SearchRequest;
 import com.enigma.ezycamp.dto.request.UpdateStatusRequest;
@@ -12,8 +13,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -35,15 +38,15 @@ public class OrderServiceImpl implements OrderService {
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public Order addOrder(NewOrderRequest request) {
+    public void addOrder(NewOrderRequest request) {
         validationUtil.validate(request);
         Customer customer = customerService.getCustomerById(request.getCustomerId());
-        Guide guide = null;
-        if (request.getGuideId() != null) guide = guideService.getGuideById(request.getGuideId());
         Location location = locationService.getById(request.getLocationId());
-        Order order = Order.builder().customer(customer).guide(guide).location(location)
+        Order order = Order.builder().customer(customer).location(location).orderStatus(OrderStatus.PENDING)
                 .date(parseDate(request.getDate())).orderType(request.getOrderType())
                 .paymentType(request.getPaymentType()).day(request.getDay()).build();
+        if (request.getGuideId() != null) order.setGuide(guideService.getGuideById(request.getGuideId()));
+        if(request.getSentAddress()!=null) order.setSentAddress(request.getSentAddress());
         OrderGuaranteeImage guaranteeImage = guaranteeService.addGuarantee(request.getImage());
         order.setOrderGuaranteeImage(guaranteeImage);
         List<OrderEquipment> orderEquipments = request.getOrderEquipmentRequests().stream().map(eq -> {
@@ -54,7 +57,15 @@ public class OrderServiceImpl implements OrderService {
         order.setOrderEquipments(orderEquipments);
         Payment payment = paymentService.addPayment(order);
         order.setPayment(payment);
-        return orderRepository.saveAndFlush(order);
+        orderRepository.saveAndFlush(order);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public Order approveOrder(String orderId) {
+        Order order = orderRepository.findById(orderId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Data order tidak ditemukan"));
+        order.setOrderStatus(OrderStatus.ACTIVE);
+        return order;
     }
 
     @Transactional(readOnly = true)

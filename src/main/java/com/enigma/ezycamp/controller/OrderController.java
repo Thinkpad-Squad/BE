@@ -34,22 +34,32 @@ public class OrderController {
 
     @SecurityRequirement(name = "Bearer Authentication")
     @PreAuthorize("hasAnyRole('ADMIN','CUSTOMER')")
-    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<WebResponse<Order>> addOrder(@RequestPart(name = "order") String jsonOrder,
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<WebResponse> addOrder(@RequestPart(name = "order") String jsonOrder,
                                                        @RequestPart(name = "guarantee")MultipartFile guarantee){
-        WebResponse<Order> response;
+        WebResponse response;
         try {
             NewOrderRequest request = objectMapper.readValue(jsonOrder, new TypeReference<NewOrderRequest>() {});
             request.setImage(guarantee);
-            Order order = orderService.addOrder(request);
+            orderService.addOrder(request);
             response = WebResponse.<Order>builder().statusCode(HttpStatus.CREATED.value())
-                    .message("Berhasil menambahkan transaksi").data(order).build();
+                    .message("Berhasil menambahkan transaksi").build();
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
         }catch (JsonProcessingException e){
             response = WebResponse.<Order>builder().statusCode(HttpStatus.INTERNAL_SERVER_ERROR.value())
                     .message("Gagal menambahkan transaksi").build();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
+    }
+
+    @SecurityRequirement(name = "Bearer Authentication")
+    @PreAuthorize("hasRole('ADMIN')")
+    @PutMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<WebResponse<Order>> updateOrderStatus(@PathVariable String id){
+        Order order = orderService.approveOrder(id);
+        WebResponse<Order> response = WebResponse.<Order>builder().statusCode(HttpStatus.OK.value())
+                .message("Berhasil memperbarui status order").data(order).build();
+        return ResponseEntity.ok(response);
     }
 
     @SecurityRequirement(name = "Bearer Authentication")

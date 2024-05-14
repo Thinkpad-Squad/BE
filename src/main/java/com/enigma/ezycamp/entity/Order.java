@@ -1,5 +1,6 @@
 package com.enigma.ezycamp.entity;
 
+import com.enigma.ezycamp.constant.OrderStatus;
 import com.enigma.ezycamp.constant.OrderType;
 import com.enigma.ezycamp.constant.PaymentType;
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -41,6 +42,10 @@ public class Order {
     private OrderType orderType;
     @Column(name = "payment_type")
     private PaymentType paymentType;
+    @Column(name = "order_status")
+    private OrderStatus orderStatus;
+    @Column(name = "sent_address")
+    private String sentAddress;
     @OneToMany(mappedBy = "order", cascade = CascadeType.PERSIST)
     @JsonManagedReference
     private List<OrderEquipment> orderEquipments;
