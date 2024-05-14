@@ -5,6 +5,7 @@ import com.enigma.ezycamp.dto.request.ChangeCartRequest;
 import com.enigma.ezycamp.dto.request.UpdateCustomerRequest;
 import com.enigma.ezycamp.dto.response.PagingResponse;
 import com.enigma.ezycamp.dto.response.WebResponse;
+import com.enigma.ezycamp.entity.Cart;
 import com.enigma.ezycamp.entity.Customer;
 import com.enigma.ezycamp.security.AuthenticatedUser;
 import com.enigma.ezycamp.service.CustomerService;
@@ -94,11 +95,11 @@ public class CustomerController {
     @SecurityRequirement(name = "Bearer Authentication")
     @PreAuthorize("@authenticatedUser.hasCustomerId(#id)")
     @PutMapping(path = "/{id}/carts", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<WebResponse<Customer>> changeCart(@PathVariable String id,
-                                                            @RequestBody ChangeCartRequest request) {
-        Customer customer = customerService.updateCart(id, request);
-        WebResponse<Customer> response = WebResponse.<Customer>builder().statusCode(HttpStatus.OK.value())
-                .message("Berhasil mengubah keranjang").data(customer).build();
+    public ResponseEntity<WebResponse<List<Cart>>> changeCart(@PathVariable String id,
+                                                              @RequestBody ChangeCartRequest request) {
+        List<Cart> carts = customerService.updateCart(id, request);
+        WebResponse<List<Cart>> response = WebResponse.<List<Cart>>builder().statusCode(HttpStatus.OK.value())
+                .message("Berhasil mengubah keranjang").data(carts).build();
         return ResponseEntity.ok(response);
     }
 }

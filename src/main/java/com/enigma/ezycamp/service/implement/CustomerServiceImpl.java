@@ -90,13 +90,12 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public Customer updateCart(String customerId, ChangeCartRequest request) {
+    public List<Cart> updateCart(String customerId, ChangeCartRequest request) {
         validationUtil.validate(request);
         Customer customer = getCustomerById(customerId);
         if(customer.getCarts() == null || customer.getCarts().isEmpty()){
             Cart cart = cartService.addCart(customer, request);
-            customer.setCarts(List.of(cart));
-            return customer;
+            return List.of(cart);
         } else {
             List<Cart> carts = customer.getCarts();
             for (int i = 0; i<customer.getCarts().size(); i++){
@@ -110,15 +109,13 @@ public class CustomerServiceImpl implements CustomerService {
                         Cart cartUpdate = cartService.updateCart(cart, request.getQuantity());
                         carts.set(i, cartUpdate);
                     }
-                    customer.setCarts(carts);
-                    return customer;
+                    return carts;
                 }
             }
             if(request.getQuantity() == 0) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Keranjang tidak bisa dibuat dengan kuantitas 0");
             Cart cart = cartService.addCart(customer, request);
             carts.add(cart);
-            customer.setCarts(carts);
-            return customer;
+            return carts;
         }
     }
 }

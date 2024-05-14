@@ -42,7 +42,7 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     public Payment addPayment(Order order) {
         Long amount = order.getOrderEquipments().stream().map(value-> (
-                value.getQuantity()*value.getEquipment().getPrice()
+                value.getQuantity()*value.getEquipment().getPrice()*order.getDay()
         )).reduce(0L, Long::sum);
         List<PaymentItemDetailRequest> itemDetailRequestList = order.getOrderEquipments().stream().map(orderEquipment ->
                 PaymentItemDetailRequest.builder().name(orderEquipment.getEquipment().getName())
