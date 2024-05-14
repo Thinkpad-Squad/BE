@@ -8,6 +8,7 @@ import com.enigma.ezycamp.dto.response.WebResponse;
 import com.enigma.ezycamp.entity.Customer;
 import com.enigma.ezycamp.entity.Role;
 import com.enigma.ezycamp.entity.UserAccount;
+import com.enigma.ezycamp.security.AuthenticatedUser;
 import com.enigma.ezycamp.service.CustomerService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -38,6 +39,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class CustomerControllerTest {
     @MockBean
     private CustomerService customerService;
+    @MockBean
+    private AuthenticatedUser authenticatedUser;
     @Autowired
     private MockMvc mockMvc;
     @Autowired
@@ -95,9 +98,10 @@ public class CustomerControllerTest {
                 });
     }
 
-    @WithMockUser(roles = "ADMIN")
+    @WithMockUser(roles = "CUSTOMER")
     @Test
     void updateCustomer() throws Exception {
+        when(authenticatedUser.hasCustomerId(anyString())).thenReturn(true);
         UpdateCustomerRequest request = UpdateCustomerRequest.builder().id("1").name("name").phone("0888").username("username").build();
         Customer customer = Customer.builder().id(request.getId()).name(request.getName()).build();
         when(customerService.updateCustomer(any(UpdateCustomerRequest.class))).thenReturn(customer);

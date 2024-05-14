@@ -32,7 +32,7 @@ public class GuideController {
         Guide guide = guideService.getGuideById(id);
         WebResponse<Guide> response = WebResponse.<Guide>builder().statusCode(HttpStatus.OK.value())
                 .message("Berhasil mendapatkan data pemandu").data(guide).build();
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        return ResponseEntity.ok(response);
     }
 
     @SecurityRequirement(name = "Bearer Authentication")
