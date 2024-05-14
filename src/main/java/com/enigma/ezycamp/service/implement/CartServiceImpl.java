@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class CartServiceImpl implements CartService {
@@ -26,6 +28,12 @@ public class CartServiceImpl implements CartService {
         if(request.getQuantity()> equipment.getStock()) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Kuantitas melebihi stock dari peralatan");
         Cart cart = Cart.builder().customer(customer).quantity(request.getQuantity()).equipment(equipment).build();
         return cartRepository.saveAndFlush(cart);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<Cart> getCart(String customerId) {
+        return cartRepository.getCartByCustomerId(customerId);
     }
 
     @Transactional(rollbackFor = Exception.class)

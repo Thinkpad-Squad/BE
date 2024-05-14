@@ -17,4 +17,5 @@ public interface CustomerService {
     Customer updateCustomer(UpdateCustomerRequest customer);
     void disableById(String id);
     List<Cart> updateCart(String customerId, ChangeCartRequest request);
+    List<Cart> getAllCart(String customerId);
 }

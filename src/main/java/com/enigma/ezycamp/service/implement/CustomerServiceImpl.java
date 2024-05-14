@@ -118,4 +118,10 @@ public class CustomerServiceImpl implements CustomerService {
             return carts;
         }
     }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<Cart> getAllCart(String customerId) {
+        return cartService.getCart(customerId);
+    }
 }

@@ -102,4 +102,14 @@ public class CustomerController {
                 .message("Berhasil mengubah keranjang").data(carts).build();
         return ResponseEntity.ok(response);
     }
+
+    @SecurityRequirement(name = "Bearer Authentication")
+    @PreAuthorize("hasRole('ADMIN') or @authenticatedUser.hasCustomerId(#id)")
+    @GetMapping(path = "/{id}/carts", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<WebResponse<List<Cart>>> getAllCart(@PathVariable String id){
+        List<Cart> carts = customerService.getAllCart(id);
+        WebResponse<List<Cart>> response = WebResponse.<List<Cart>>builder().statusCode(HttpStatus.OK.value())
+                .message("Berhasil mendapatkan data keranjang").data(carts).build();
+        return ResponseEntity.ok(response);
+    }
 }
