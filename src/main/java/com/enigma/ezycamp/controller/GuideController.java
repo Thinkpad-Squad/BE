@@ -69,7 +69,7 @@ public class GuideController {
 
     @SecurityRequirement(name = "Bearer Authentication")
     @PreAuthorize("hasRole('ADMIN') or @authenticatedUser.hasGuideId(#id)")
-    @PutMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @DeleteMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<WebResponse> disableGuideById(@PathVariable String id){
         guideService.disableById(id);
         WebResponse response = WebResponse.builder().statusCode(HttpStatus.OK.value())

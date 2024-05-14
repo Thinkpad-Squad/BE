@@ -90,8 +90,7 @@ public class EquipmentController {
     @SecurityRequirement(name = "Bearer Authentication")
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<WebResponse<Equipment>> updateEquipment(@RequestPart(name = "equipment") String jsonEq,
-                                                                  @RequestPart(name = "images", required = false)List<MultipartFile> images){
+    public ResponseEntity<WebResponse<Equipment>> updateEquipment(@RequestPart(name = "equipment") String jsonEq, @RequestPart(name = "images", required = false)List<MultipartFile> images){
         WebResponse<Equipment> response;
         try {
             UpdateEquipmentRequest request = objectMapper.readValue(jsonEq, new TypeReference<UpdateEquipmentRequest>() {});

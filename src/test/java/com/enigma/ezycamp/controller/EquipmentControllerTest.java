@@ -29,6 +29,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -92,9 +93,19 @@ public class EquipmentControllerTest {
         MockMultipartFile equipment = new MockMultipartFile("equipment", "equipment", "text/plain", jsonEq.getBytes());
         Equipment equipmentNew = Equipment.builder().name("name").price(1L).build();
         when(equipmentService.addEquipment(any(NewEquipmentRequest.class))).thenReturn(equipmentNew);
-        mockMvc.perform(MockMvcRequestBuilders.multipart(HttpMethod.PUT,"/api/equipments").file(file).file(equipment).accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
-//                .andDo(result -> {WebResponse<Equipment> response = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<WebResponse<Equipment>>() {});
-//            assertEquals(200, response.getStatusCode());
-//        });
+        mockMvc.perform(MockMvcRequestBuilders.multipart(HttpMethod.PUT,"/api/equipments").file(file).file(equipment).accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+                .andDo(result -> {WebResponse<Equipment> response = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<WebResponse<Equipment>>() {});
+            assertEquals(200, response.getStatusCode());
+        });
+    }
+
+    @WithMockUser(roles = "ADMIN")
+    @Test
+    void disableEquipment() throws  Exception{
+        String id = "1";
+        doNothing().when(equipmentService).disableEquipmentById(anyString());
+        mockMvc.perform(MockMvcRequestBuilders.delete("/api/equipments/"+id).content(id)).andExpect(status().isOk()).andDo(result -> {WebResponse response = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<WebResponse>() {});
+            assertEquals(200, response.getStatusCode());
+        });
     }
 }
