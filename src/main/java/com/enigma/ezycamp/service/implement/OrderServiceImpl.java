@@ -70,7 +70,7 @@ public class OrderServiceImpl implements OrderService {
         }
         if(order.getOrderStatus() == OrderStatus.PENDING) order.setOrderStatus(OrderStatus.ACTIVE);
         else if (order.getOrderStatus() == OrderStatus.ACTIVE) order.setOrderStatus(OrderStatus.FINISHED);
-        return order;
+        return orderRepository.saveAndFlush(order);
     }
 
     @Transactional(readOnly = true)
