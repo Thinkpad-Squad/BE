@@ -60,7 +60,7 @@ public class OrderServiceImpl implements OrderService {
         orderRepository.saveAndFlush(order);
     }
 
-    @Transactional(readOnly = true)
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public Order changeOrderStatus(String orderId) {
         Order order = orderRepository.findById(orderId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Data order tidak ditemukan"));
