@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 public interface OrderService {
     void addOrder(NewOrderRequest request);
     Order changeOrderStatus(String orderId);
+    Order rejectOrder(String orderId);
     Page<Order> findAllOrder(SearchRequest request);
     Page<Order> findByCustomerId(SearchRequest request);
     Page<Order> findByGuideId(SearchRequest request);

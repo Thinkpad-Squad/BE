@@ -63,24 +63,18 @@ public class CustomerControllerTest {
                 } );
     }
 
-//    @WithMockUser(roles = "ADMIN")
-//    @Test
-//    void findCustomerByUsername() throws Exception{
-//        String username = "user";
-//        UserAccount account = UserAccount.builder().username(username).roles(List.of(Role.builder().role(UserRole.ROLE_CUSTOMER).build())).build();
-//        Customer customer = Customer.builder().userAccount(account).build();
-//        when(customerService.getCustomerByUsername(anyString())).thenReturn(customer);
-//        mockMvc.perform(MockMvcRequestBuilders.get("/api/customers/username/"+username)
-//                        .content(username))
-//                .andExpect(status().isOk())
-//                .andDo(MockMvcResultHandlers.print())
-//                .andDo(result -> {
-//                    WebResponse<Customer> response = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<WebResponse<Customer>>() {});
-//                    assertEquals(200, response.getStatusCode());
-//                    assertEquals("Berhasil mendapatkan data customer", response.getMessage());
-//                    assertEquals(username, response.getData().getUserAccount().getUsername());
-//                } );
-//    }
+    @WithMockUser(roles = "ADMIN")
+    @Test
+    void findCustomerByUsername() throws Exception{
+        when(authenticatedUser.hasCustomerId(anyString())).thenReturn(true);
+        String username = "user";
+        UserAccount account = UserAccount.builder().username(username).roles(List.of(Role.builder().role(UserRole.ROLE_CUSTOMER).build())).isEnable(true).build();
+        Customer customer = Customer.builder().userAccount(account).build();
+        when(customerService.getCustomerByUsername(anyString())).thenReturn(customer);
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/customers/username/"+username)
+                        .content(username))
+                .andExpect(status().isOk());
+    }
 
     @WithMockUser(roles = "ADMIN")
     @Test

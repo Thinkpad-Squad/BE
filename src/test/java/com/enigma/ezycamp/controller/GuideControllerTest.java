@@ -42,7 +42,6 @@ public class GuideControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-
     @WithMockUser(roles = "ADMIN")
     @Test
     void findGuideById() throws Exception {

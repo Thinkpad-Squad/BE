@@ -55,8 +55,8 @@ public class EquipmentImageServiceTest {
 
     @Test
     void getByName(){
-        String name = "timeNow_image.jpg";
-        EquipmentImage image = EquipmentImage.builder().path("/Users/Lenovo/OneDrive/Gambar/EzyCamp/EquipmentImage/1715651386673_image.jpg").build();
+        String name = "1715876646926_image.jpg";
+        EquipmentImage image = EquipmentImage.builder().path("/Users/Lenovo/OneDrive/Gambar/EzyCamp/EquipmentImage/1715876646926_image.jpg").build();
         Resource expectedResource = null;
         try {
             expectedResource = new UrlResource(Paths.get(image.getPath()).toUri());
@@ -70,7 +70,7 @@ public class EquipmentImageServiceTest {
 
     @Test
     void delete(){
-        EquipmentImage equipmentImage = EquipmentImage.builder().id("1").path("/Users/Lenovo/OneDrive/Gambar/EzyCamp/EquipmentImage/1715651386673_image.jpg").build();
+        EquipmentImage equipmentImage = EquipmentImage.builder().id("1").path("/Users/Lenovo/OneDrive/Gambar/EzyCamp/EquipmentImage/1715650917217_image.jpg").build();
         when(imageRepository.findById(anyString())).thenReturn(Optional.of(equipmentImage));
         doNothing().when(imageRepository).delete(any(EquipmentImage.class));
         equipmentImageService.delete(equipmentImage);

@@ -93,7 +93,7 @@ public class CustomerServiceTest {
     @Test
     void disableById(){
         String id = "1";
-        Customer customer = Customer.builder().id(id).userAccount(UserAccount.builder().isEnable(false).build()).build();
+        Customer customer = Customer.builder().id(id).userAccount(UserAccount.builder().isEnable(false).build()).carts(Collections.emptyList()).build();
         when(customerRepository.findByIdCustomer(anyString())).thenReturn(Optional.of(customer));
         when(customerRepository.saveAndFlush(any(Customer.class))).thenReturn(customer);
         customerService.disableById(id);
@@ -108,8 +108,7 @@ public class CustomerServiceTest {
         when(customerRepository.findByIdCustomer(anyString())).thenReturn(Optional.of(customer));
         Cart cart = Cart.builder().id("1").quantity(request.getQuantity()).customer(customer).equipment(Equipment.builder().id(request.getEquipmentId()).build()).build();
         when(cartService.addCart(any(Customer.class), any(ChangeCartRequest.class))).thenReturn(cart);
-        Customer result = customerService.updateCart(customerId, request);
-        assertEquals(result.getId(), customerId);
-        assertEquals(result.getCarts().get(0).getQuantity(), request.getQuantity());
+        List<Cart> result = customerService.updateCart(customerId, request);
+        assertEquals(result.get(0).getQuantity(), request.getQuantity());
     }
 }

@@ -73,6 +73,14 @@ public class OrderServiceImpl implements OrderService {
         return orderRepository.saveAndFlush(order);
     }
 
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public Order rejectOrder(String orderId) {
+        Order order = orderRepository.findById(orderId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Data order tidak ditemukan"));
+        if(order.getOrderStatus() == OrderStatus.PENDING) order.setOrderStatus(OrderStatus.REJECTED);
+        return orderRepository.saveAndFlush(order);
+    }
+
     @Transactional(readOnly = true)
     @Override
     public Page<Order> findAllOrder(SearchRequest request) {

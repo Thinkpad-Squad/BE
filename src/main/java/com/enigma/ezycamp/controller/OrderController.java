@@ -64,6 +64,16 @@ public class OrderController {
 
     @SecurityRequirement(name = "Bearer Authentication")
     @PreAuthorize("hasRole('ADMIN')")
+    @PutMapping(path = "/reject/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<WebResponse<Order>> rejectOrder(@PathVariable String id){
+        Order order = orderService.rejectOrder(id);
+        WebResponse<Order> response = WebResponse.<Order>builder().statusCode(HttpStatus.OK.value())
+                .message("Berhasil memperbarui status order").data(order).build();
+        return ResponseEntity.ok(response);
+    }
+
+    @SecurityRequirement(name = "Bearer Authentication")
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<WebResponse<List<Order>>> getAllOrder(
             @RequestParam(name = "page", defaultValue = "1") Integer page,
