@@ -1,6 +1,7 @@
 package com.enigma.ezycamp.service.implement;
 
 import com.enigma.ezycamp.constant.OrderStatus;
+import com.enigma.ezycamp.constant.PaymentType;
 import com.enigma.ezycamp.dto.request.NewOrderRequest;
 import com.enigma.ezycamp.dto.request.SearchRequest;
 import com.enigma.ezycamp.dto.request.UpdateStatusRequest;
@@ -60,11 +61,14 @@ public class OrderServiceImpl implements OrderService {
 
     @Transactional(readOnly = true)
     @Override
-    public Order approveOrder(String orderId) {
+    public Order changeOrderStatus(String orderId) {
         Order order = orderRepository.findById(orderId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Data order tidak ditemukan"));
-        order.setOrderStatus(OrderStatus.ACTIVE);
-        Payment payment = paymentService.addPayment(order);
-        order.setPayment(payment);
+        if(order.getPaymentType() == PaymentType.TRANSFER && order.getOrderStatus() == OrderStatus.PENDING){
+            Payment payment = paymentService.addPayment(order);
+            order.setPayment(payment);
+        }
+        if(order.getOrderStatus() == OrderStatus.PENDING) order.setOrderStatus(OrderStatus.ACTIVE);
+        else if (order.getOrderStatus() == OrderStatus.ACTIVE) order.setOrderStatus(OrderStatus.FINISHED);
         return order;
     }
 

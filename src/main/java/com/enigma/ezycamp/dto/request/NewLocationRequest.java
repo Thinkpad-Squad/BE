@@ -28,5 +28,6 @@ public class NewLocationRequest {
     private String nearestStoreAddress;
     @NotNull(message = "Gambar lokasi tidak boleh kosong")
     @Size(max = 10485760, message = "Ukuran file gambar tidak boleh melebihi 10MB")
+    @Size(min = 1, message = "Gambar lokasi tidak boleh kosong")
     private List<MultipartFile> images;
 }

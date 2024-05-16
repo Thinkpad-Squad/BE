@@ -56,7 +56,7 @@ public class OrderController {
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<WebResponse<Order>> updateOrderStatus(@PathVariable String id){
-        Order order = orderService.approveOrder(id);
+        Order order = orderService.changeOrderStatus(id);
         WebResponse<Order> response = WebResponse.<Order>builder().statusCode(HttpStatus.OK.value())
                 .message("Berhasil memperbarui status order").data(order).build();
         return ResponseEntity.ok(response);

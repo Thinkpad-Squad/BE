@@ -5,6 +5,7 @@ import com.enigma.ezycamp.constant.PaymentType;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -28,6 +29,7 @@ public class NewOrderRequest {
     private Integer day;
     private String sentAddress;
     @NotNull(message = "Daftar peralatan yang disewa tidak boleh kosong")
+    @Size(min = 1, message = "Daftar peralatan yang disewa tidak boleh kosong")
     private List<OrderEquipmentRequest> orderEquipmentRequests;
     @NotNull(message = "Gambar jaminan diperlukan untuk menyewa")
     private MultipartFile image;
