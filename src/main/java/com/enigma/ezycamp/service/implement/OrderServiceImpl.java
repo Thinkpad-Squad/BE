@@ -64,12 +64,17 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Order changeOrderStatus(String orderId) {
         Order order = orderRepository.findById(orderId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Data order tidak ditemukan"));
-        if(order.getPaymentType() == PaymentType.TRANSFER && order.getOrderStatus() == OrderStatus.PENDING){
-            Payment payment = paymentService.addPayment(order);
-            order.setPayment(payment);
+        if (order.getOrderStatus() == OrderStatus.ACTIVE) order.setOrderStatus(OrderStatus.FINISHED);
+        else if(order.getOrderStatus() == OrderStatus.PENDING){
+            if(order.getPaymentType() == PaymentType.TRANSFER){
+                Payment payment = paymentService.addPayment(order);
+                order.setPayment(payment);
+            } else {
+                Payment payment = paymentService.cashPayment(order);
+                order.setPayment(payment);
+            }
+            order.setOrderStatus(OrderStatus.ACTIVE);
         }
-        if(order.getOrderStatus() == OrderStatus.PENDING) order.setOrderStatus(OrderStatus.ACTIVE);
-        else if (order.getOrderStatus() == OrderStatus.ACTIVE) order.setOrderStatus(OrderStatus.FINISHED);
         return orderRepository.saveAndFlush(order);
     }
 

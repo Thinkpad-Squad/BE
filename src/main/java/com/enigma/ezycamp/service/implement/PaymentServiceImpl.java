@@ -68,6 +68,13 @@ public class PaymentServiceImpl implements PaymentService {
         return paymentRepository.saveAndFlush(payment);
     }
 
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public Payment cashPayment(Order order) {
+        Payment payment = Payment.builder().url("cash").order(order).build();
+        return paymentRepository.saveAndFlush(payment);
+    }
+
     @Transactional(readOnly = true)
     @Override
     public Payment findById(String id){

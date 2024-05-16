@@ -46,10 +46,33 @@ public class ImageControllerTest {
 
     @Test
     void downloadEquipmentImage() throws Exception {
-        String name = "1715650917217_image.jpg";
+        String name = "1715876695407_image.jpg";
         Resource expectedResource = new UrlResource(Paths.get("/Users/Lenovo/OneDrive/Gambar/EzyCamp/EquipmentImage/"+name).toUri());
         when(equipmentImageService.getByName(anyString())).thenReturn(expectedResource);
         mockMvc.perform(MockMvcRequestBuilders.get("/api/equipments/images/"+name).content(name)).andExpect(status().isOk());
     }
 
+    @Test
+    void downloadGuideImage() throws Exception {
+        String name = "1715656231104_image.jpg";
+        Resource expectedResource = new UrlResource(Paths.get("/Users/Lenovo/OneDrive/Gambar/EzyCamp/GuideImage/"+name).toUri());
+        when(guideImageService.getByName(anyString())).thenReturn(expectedResource);
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/guides/images/"+name).content(name)).andExpect(status().isOk());
+    }
+
+    @Test
+    void downloadLocationImage() throws Exception {
+        String name = "1714976722233_download.jpg";
+        Resource expectedResource = new UrlResource(Paths.get("/Users/Lenovo/OneDrive/Gambar/EzyCamp/LocationImage/"+name).toUri());
+        when(locationImageService.getByName(anyString())).thenReturn(expectedResource);
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/locations/images/"+name).content(name)).andExpect(status().isOk());
+    }
+
+    @Test
+    void downloadGuaranteeImage() throws Exception {
+        String name = "1715829995660_nyelam1.jpg";
+        Resource expectedResource = new UrlResource(Paths.get("/Users/Lenovo/OneDrive/Gambar/EzyCamp/OrderGuaranteeImage/"+name).toUri());
+        when(orderGuaranteeService.getByName(anyString())).thenReturn(expectedResource);
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/orders/guaranteeImages/"+name).content(name)).andExpect(status().isOk());
+    }
 }

@@ -36,7 +36,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-public class CustomerControllerTest {
+class CustomerControllerTest {
     @MockBean
     private CustomerService customerService;
     @MockBean
