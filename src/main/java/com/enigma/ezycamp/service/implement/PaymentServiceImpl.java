@@ -45,8 +45,8 @@ public class PaymentServiceImpl implements PaymentService {
                 value.getQuantity()*value.getEquipment().getPrice()*order.getDay()
         )).reduce(0L, Long::sum);
         List<PaymentItemDetailRequest> itemDetailRequestList = order.getOrderEquipments().stream().map(orderEquipment ->
-                PaymentItemDetailRequest.builder().name(orderEquipment.getEquipment().getName())
-                        .price(orderEquipment.getEquipment().getPrice())
+                PaymentItemDetailRequest.builder().name(orderEquipment.getEquipment().getName()+" ("+order.getDay()+" days)")
+                        .price(orderEquipment.getEquipment().getPrice() * order.getDay())
                         .quantity(orderEquipment.getQuantity()).build()).toList();
         PaymentRequest request = PaymentRequest.builder()
                 .paymentDetail(PaymentDetailRequest.builder()

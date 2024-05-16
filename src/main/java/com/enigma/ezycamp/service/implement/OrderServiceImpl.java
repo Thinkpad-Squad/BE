@@ -55,8 +55,6 @@ public class OrderServiceImpl implements OrderService {
                     .build();
         }).toList();
         order.setOrderEquipments(orderEquipments);
-        Payment payment = paymentService.addPayment(order);
-        order.setPayment(payment);
         orderRepository.saveAndFlush(order);
     }
 
@@ -65,6 +63,8 @@ public class OrderServiceImpl implements OrderService {
     public Order approveOrder(String orderId) {
         Order order = orderRepository.findById(orderId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Data order tidak ditemukan"));
         order.setOrderStatus(OrderStatus.ACTIVE);
+        Payment payment = paymentService.addPayment(order);
+        order.setPayment(payment);
         return order;
     }
 
