@@ -8,6 +8,6 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 public class UpdateStatusRequest {
-    private String paymentId;
-    private String status;
+    private String orderId;
+    private String transactionStatus;
 }

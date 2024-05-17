@@ -156,8 +156,8 @@ public class OrderController {
     @PostMapping("/status")
     public ResponseEntity<WebResponse<?>> updateStatus(@RequestBody Map<String, Object> request){
         UpdateStatusRequest statusRequest = UpdateStatusRequest.builder()
-                .paymentId(request.get("order_id").toString())
-                .status(request.get("transaction_status").toString()).build();
+                .orderId(request.get("order_id").toString())
+                .transactionStatus(request.get("transaction_status").toString()).build();
         orderService.updateStatus(statusRequest);
         return ResponseEntity.ok(WebResponse.builder()
                 .statusCode(HttpStatus.OK.value())

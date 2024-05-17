@@ -118,8 +118,8 @@ public class OrderServiceImpl implements OrderService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void updateStatus(UpdateStatusRequest request) {
-        Payment payment = paymentService.findById(request.getPaymentId());
-        payment.setStatus(request.getStatus());
+        Payment payment = paymentService.findById(request.getOrderId());
+        payment.setStatus(request.getTransactionStatus());
     }
 
     private static Date parseDate(String date) {
