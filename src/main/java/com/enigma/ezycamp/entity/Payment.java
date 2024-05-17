@@ -13,7 +13,6 @@ import lombok.*;
 @Table(name = "t_payment")
 public class Payment {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
     @Column(name = "status")
     private String status;

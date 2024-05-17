@@ -48,9 +48,10 @@ public class PaymentServiceImpl implements PaymentService {
                 PaymentItemDetailRequest.builder().name(orderEquipment.getEquipment().getName()+" ("+order.getDay()+" days)")
                         .price(orderEquipment.getEquipment().getPrice() * order.getDay())
                         .quantity(orderEquipment.getQuantity()).build()).toList();
+        String id = UUID.randomUUID().toString();
         PaymentRequest request = PaymentRequest.builder()
                 .paymentDetail(PaymentDetailRequest.builder()
-                        .orderId(UUID.randomUUID().toString())
+                        .orderId(id)
                         .amount(amount).build())
                 .paymentItemDetails(itemDetailRequestList)
                 .paymentMethod(List.of("credit_card", "cimb_clicks",
@@ -62,7 +63,7 @@ public class PaymentServiceImpl implements PaymentService {
                 .header(HttpHeaders.AUTHORIZATION, "Basic " + SECRET_KEY)
                 .retrieve().toEntity(new ParameterizedTypeReference<Map<String, String>>() {});
         Map<String, String> body = response.getBody();
-        Payment payment = Payment.builder().id(request.getPaymentDetail().getOrderId())
+        Payment payment = Payment.builder().id(id)
                 .url(body.get("redirect_url"))
                 .status("ordered").build();
         return paymentRepository.saveAndFlush(payment);
