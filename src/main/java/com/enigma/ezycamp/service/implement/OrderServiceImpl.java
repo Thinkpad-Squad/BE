@@ -53,6 +53,7 @@ public class OrderServiceImpl implements OrderService {
         List<OrderEquipment> orderEquipments = request.getOrderEquipmentRequests().stream().map(eq -> {
             Equipment equipment = equipmentService.getEquipmentById(eq.getEquipmentId());
             if(equipment.getStock() < eq.getQuantity()) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Quantity pemesanan melebihi stock barang");
+            else equipmentService.changeStock(eq.getEquipmentId(), equipment.getStock()-eq.getQuantity());
             return OrderEquipment.builder().equipment(equipment).quantity(eq.getQuantity()).order(order)
                     .build();
         }).toList();

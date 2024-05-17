@@ -96,4 +96,12 @@ public class EquipmentServiceImpl implements EquipmentService {
         equipment.setIsEnable(false);
         equipmentRepository.saveAndFlush(equipment);
     }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void changeStock(String id, Integer stock) {
+        Equipment equipment = getEquipmentById(id);
+        equipment.setStock(stock);
+        equipmentRepository.saveAndFlush(equipment);
+    }
 }
