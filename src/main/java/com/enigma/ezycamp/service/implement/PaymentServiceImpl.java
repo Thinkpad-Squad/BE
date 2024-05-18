@@ -72,7 +72,8 @@ public class PaymentServiceImpl implements PaymentService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public Payment cashPayment(Order order) {
-        Payment payment = Payment.builder().id(UUID.randomUUID().toString()).status("cash order").url("cash").order(order).build();
+        String id = UUID.randomUUID().toString();
+        Payment payment = Payment.builder().id(id).status("cash order").url("cash").build();
         return paymentRepository.saveAndFlush(payment);
     }
 
