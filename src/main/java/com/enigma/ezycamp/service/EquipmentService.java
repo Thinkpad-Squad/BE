@@ -12,4 +12,5 @@ public interface EquipmentService {
     Page<Equipment> getAllEquipment(SearchRequest request);
     Equipment updateEquipment(UpdateEquipmentRequest request);
     void disableEquipmentById(String id);
+    void changeStock(String id, Integer stock);
 }

@@ -18,6 +18,8 @@ public class UpdateEquipmentRequest {
     private String id;
     @NotBlank(message = "Nama peralatan tidak boleh kosong")
     private String name;
+    @NotBlank(message = "Deskripsi peralatan tidak boleh kosong")
+    private String description;
     @NotNull(message = "Harga sewa tidak boleh kosong")
     @Min(value = 0, message = "Harga sewa peralatan tidak boleh kurang dari 0")
     private Long price;

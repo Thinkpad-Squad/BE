@@ -12,6 +12,8 @@ import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -54,12 +56,26 @@ public class EquipmentImageServiceImpl implements EquipmentImageService {
             String name = System.currentTimeMillis()+"_"+image.getOriginalFilename();
             Path imagePath = IMAGE_PATH.resolve(name);
             Files.copy(image.getInputStream(), imagePath);
-            EquipmentImage imageSave = EquipmentImage.builder().name(name).url(imagePath.toString())
+            EquipmentImage imageSave = EquipmentImage.builder().name(name).path(imagePath.toString())
                     .originalName(image.getOriginalFilename()).size(image.getSize())
-                    .equipment(equipment).build();
+                    .equipment(equipment).url("/api/equipments/images/"+name).build();
             return imageRepository.saveAndFlush(imageSave);
         } catch (IOException e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Gagal menyimpan gambar");
+        }
+    }
+
+
+    @Transactional(readOnly = true)
+    @Override
+    public Resource getByName(String name) {
+        try {
+            EquipmentImage image = imageRepository.findByName(name).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "Gambar peralatan tidak ditemukan"));
+            Path filePath = Paths.get(image.getPath());
+            if (!Files.exists(filePath)) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Gambar peralatan tidak ditemukan");
+            return new UrlResource(filePath.toUri());
+        } catch (IOException e){
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
     }
 
@@ -68,7 +84,7 @@ public class EquipmentImageServiceImpl implements EquipmentImageService {
     public void delete(EquipmentImage image) {
         try {
             imageRepository.findById(image.getId()).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "Gambar peralatan tidak ditemukan"));
-            Path filePath = Paths.get(image.getUrl());
+            Path filePath = Paths.get(image.getPath());
             if (!Files.exists(filePath)) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Gambar peralatan tidak ditemukan");
             Files.delete(filePath);
             imageRepository.delete(image);

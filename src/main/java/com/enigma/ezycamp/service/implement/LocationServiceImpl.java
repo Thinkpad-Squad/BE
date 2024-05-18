@@ -3,6 +3,8 @@ package com.enigma.ezycamp.service.implement;
 import com.enigma.ezycamp.dto.request.NewLocationRequest;
 import com.enigma.ezycamp.dto.request.SearchRequest;
 import com.enigma.ezycamp.dto.request.UpdateByGuideRequest;
+import com.enigma.ezycamp.dto.request.UpdateLocationRequest;
+import com.enigma.ezycamp.entity.EquipmentImage;
 import com.enigma.ezycamp.entity.Location;
 import com.enigma.ezycamp.entity.LocationImage;
 import com.enigma.ezycamp.repository.LocationRepository;
@@ -37,7 +39,8 @@ public class LocationServiceImpl implements LocationService {
         validationUtil.validate(request);
         if (request.getImages().isEmpty()) throw new ConstraintViolationException("Gambar lokasi tidak boleh kosong", null);
         Location location = Location.builder().name(request.getName()).description(request.getDescription())
-                .recommendedActivity(request.getRecommendedActivity()).safetyTips(request.getSafetyTips()).build();
+                .recommendedActivity(request.getRecommendedActivity()).safetyTips(request.getSafetyTips())
+                .nearestStoreAddress(request.getNearestStoreAddress()).build();
         List<LocationImage> images = new ArrayList<>();
         for (MultipartFile image:request.getImages()){
             LocationImage imageAdded = locationImageService.addImageLocation(location, image);
@@ -61,6 +64,31 @@ public class LocationServiceImpl implements LocationService {
         Pageable pageable = PageRequest.of(request.getPage() -1, request.getSize(), Sort.by(Sort.Direction.fromString(request.getDirection()), request.getSortBy()));
         if(request.getParam()==null) return locationRepository.findAll(pageable);
         else return locationRepository.findByNameLocation("%"+request.getParam()+"%", pageable);
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public Location updateLocation(UpdateLocationRequest request) {
+        validationUtil.validate(request);
+        Location location = getById(request.getId());
+        location.setName(request.getName());
+        location.setDescription(request.getDescription());
+        if(request.getSafetyTips()!=null) location.setSafetyTips(request.getSafetyTips());
+        if (request.getRecommendedActivity()!=null) location.setRecommendedActivity(request.getRecommendedActivity());
+        location.setNearestStoreAddress(request.getNearestStoreAddress());
+        if (request.getImages()!=null){
+            List<LocationImage> imageOlds = location.getImages();
+            for (LocationImage imageOld:imageOlds){
+                locationImageService.delete(imageOld);
+            }
+            List<LocationImage> imageList = new ArrayList<>();
+            for (MultipartFile image: request.getImages()){
+                LocationImage imageNew = locationImageService.addImageLocation(location,image);
+                imageList.add(imageNew);
+            }
+            location.setImages(imageList);
+        }
+        return locationRepository.saveAndFlush(location);
     }
 
     @Transactional(rollbackFor = Exception.class)

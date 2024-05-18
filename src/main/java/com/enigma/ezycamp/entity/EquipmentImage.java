@@ -17,6 +17,8 @@ public class EquipmentImage {
     private String id;
     @Column(name = "name")
     private String name;
+    @Column(name = "path")
+    private String path;
     @Column(name = "url")
     private String url;
     @Column(name = "original_name")

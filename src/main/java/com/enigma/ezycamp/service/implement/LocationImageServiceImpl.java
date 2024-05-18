@@ -1,5 +1,6 @@
 package com.enigma.ezycamp.service.implement;
 
+import com.enigma.ezycamp.entity.GuideImage;
 import com.enigma.ezycamp.entity.Location;
 import com.enigma.ezycamp.entity.LocationImage;
 import com.enigma.ezycamp.repository.LocationImageRepository;
@@ -10,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -53,10 +55,38 @@ public class LocationImageServiceImpl implements LocationImageService {
             Path imagePath = directoryPath.resolve(imageName);
             Files.copy(locationImage.getInputStream(),imagePath);
             LocationImage imageSave = LocationImage.builder().location(location).name(imageName)
-                    .url(imagePath.toString()).size(locationImage.getSize())
-                    .originalName(locationImage.getOriginalFilename()).build();
+                    .path(imagePath.toString()).size(locationImage.getSize())
+                    .originalName(locationImage.getOriginalFilename())
+                    .url("/api/locations/images/"+imageName).build();
             return locationImageRepository.saveAndFlush(imageSave);
         }catch (IOException e){
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public Resource getByName(String name) {
+        try {
+            LocationImage image = locationImageRepository.findByName(name).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "Gambar lokasi tidak ditemukan"));
+            Path filePath = Paths.get(image.getPath());
+            if (!Files.exists(filePath)) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Gambar lokasi tidak ditemukan");
+            return new UrlResource(filePath.toUri());
+        } catch (IOException e){
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void delete(LocationImage locationImage) {
+        try {
+            locationImageRepository.findById(locationImage.getId()).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "Gambar lokasi tidak ditemukan"));
+            Path filePath = Paths.get(locationImage.getPath());
+            if (!Files.exists(filePath)) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Gambar lokasi tidak ditemukan");
+            Files.delete(filePath);
+            locationImageRepository.delete(locationImage);
+        } catch (IOException e){
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
     }

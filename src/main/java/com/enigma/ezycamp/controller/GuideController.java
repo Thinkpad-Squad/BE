@@ -32,7 +32,7 @@ public class GuideController {
         Guide guide = guideService.getGuideById(id);
         WebResponse<Guide> response = WebResponse.<Guide>builder().statusCode(HttpStatus.OK.value())
                 .message("Berhasil mendapatkan data pemandu").data(guide).build();
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        return ResponseEntity.ok(response);
     }
 
     @SecurityRequirement(name = "Bearer Authentication")
@@ -58,7 +58,7 @@ public class GuideController {
     }
 
     @SecurityRequirement(name = "Bearer Authentication")
-    @PreAuthorize("hasRole('ADMIN') or @authenticatedUser.hasGuideId(#request.id)")
+    @PreAuthorize("@authenticatedUser.hasGuideId(#request.id)")
     @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<WebResponse<Guide>> updateGuide(@RequestBody UpdateGuideRequest request){
         Guide guide = guideService.updateGuide(request);
@@ -69,7 +69,7 @@ public class GuideController {
 
     @SecurityRequirement(name = "Bearer Authentication")
     @PreAuthorize("hasRole('ADMIN') or @authenticatedUser.hasGuideId(#id)")
-    @PutMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @DeleteMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<WebResponse> disableGuideById(@PathVariable String id){
         guideService.disableById(id);
         WebResponse response = WebResponse.builder().statusCode(HttpStatus.OK.value())

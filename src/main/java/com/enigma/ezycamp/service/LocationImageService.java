@@ -7,4 +7,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 public interface LocationImageService {
     LocationImage addImageLocation(Location location, MultipartFile locationImage);
+    Resource getByName(String name);
+    void delete(LocationImage locationImage);
 }

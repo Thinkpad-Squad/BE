@@ -25,6 +25,8 @@ public class Location {
     private String recommendedActivity;
     @Column(name = "safety_tips")
     private String safetyTips;
+    @Column(name = "nearest_store_address")
+    private String nearestStoreAddress;
     @OneToMany(mappedBy = "location")
     @JsonManagedReference
     private List<LocationImage> images;

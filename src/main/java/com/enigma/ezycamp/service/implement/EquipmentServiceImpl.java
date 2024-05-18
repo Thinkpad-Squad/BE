@@ -39,7 +39,7 @@ public class EquipmentServiceImpl implements EquipmentService {
         validationUtil.validate(request);
         if (request.getImages().isEmpty()) throw new ConstraintViolationException("Gambar peralatan tidak boleh kosong", null);
         Equipment equipment = Equipment.builder().price(request.getPrice()).stock(request.getStock())
-                .name(request.getName()).isEnable(true).build();
+                .name(request.getName()).description(request.getDescription()).isEnable(true).build();
         List<EquipmentImage> images = new ArrayList<>();
         for (MultipartFile image:request.getImages()){
             EquipmentImage imageAdded = equipmentImageService.addImage(equipment, image);
@@ -71,6 +71,7 @@ public class EquipmentServiceImpl implements EquipmentService {
         validationUtil.validate(request);
         Equipment equipment = getEquipmentById(request.getId());
         equipment.setName(request.getName());
+        equipment.setDescription(request.getDescription());
         equipment.setPrice(request.getPrice());
         equipment.setStock(request.getStock());
         if (request.getImages()!=null){
@@ -93,6 +94,14 @@ public class EquipmentServiceImpl implements EquipmentService {
     public void disableEquipmentById(String id) {
         Equipment equipment = getEquipmentById(id);
         equipment.setIsEnable(false);
+        equipmentRepository.saveAndFlush(equipment);
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void changeStock(String id, Integer stock) {
+        Equipment equipment = getEquipmentById(id);
+        equipment.setStock(stock);
         equipmentRepository.saveAndFlush(equipment);
     }
 }

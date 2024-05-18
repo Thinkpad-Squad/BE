@@ -1,5 +1,6 @@
 package com.enigma.ezycamp.service.implement;
 
+import com.enigma.ezycamp.entity.EquipmentImage;
 import com.enigma.ezycamp.entity.Guide;
 import com.enigma.ezycamp.entity.GuideImage;
 import com.enigma.ezycamp.repository.GuideImageRepository;
@@ -8,6 +9,8 @@ import jakarta.annotation.PostConstruct;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -50,12 +53,25 @@ public class GuideImageServiceImpl implements GuideImageService {
             String name = System.currentTimeMillis()+"_"+guideImage.getOriginalFilename();
             Path imagePath = IMAGE_PATH.resolve(name);
             Files.copy(guideImage.getInputStream(),imagePath);
-            GuideImage imageSave = GuideImage.builder().name(name).url(imagePath.toString())
+            GuideImage imageSave = GuideImage.builder().name(name).path(imagePath.toString())
                     .originalName(guideImage.getOriginalFilename()).size(guideImage.getSize())
-                    .guide(guide).build();
+                    .guide(guide).url("/api/guides/images/"+name).build();
             return imageRepository.saveAndFlush(imageSave);
         } catch (IOException e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Gagal menyimpan gambar");
+        }
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public Resource getByName(String name) {
+        try {
+            GuideImage image = imageRepository.findByName(name).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "Gambar pemandu tidak ditemukan"));
+            Path filePath = Paths.get(image.getPath());
+            if (!Files.exists(filePath)) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Gambar pemandu tidak ditemukan");
+            return new UrlResource(filePath.toUri());
+        } catch (IOException e){
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
     }
 }

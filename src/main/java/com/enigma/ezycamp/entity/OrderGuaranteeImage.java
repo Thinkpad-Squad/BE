@@ -17,13 +17,12 @@ public class OrderGuaranteeImage {
     private String id;
     @Column(name = "name")
     private String name;
+    @Column(name = "path")
+    private String path;
     @Column(name = "url")
     private String url;
     @Column(name = "original_name")
     private String originalName;
     @Column(name = "size")
     private Long size;
-    @OneToOne
-    @JoinColumn(name = "order_id")
-    private Order order;
 }
